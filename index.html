@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Fan Review</title>
+  <link rel="icon" href="data:,">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <style>
+    body{font-family:Inter,system-ui,sans-serif;max-width:680px;margin:2rem auto;padding:0 1rem;}
+    h1{text-align:center;}
+    label{display:block;margin:12px 0 4px;font-weight:600;}
+    input,select,textarea{width:100%;padding:8px;font-size:1rem;border:1px solid #ccc;border-radius:4px;}
+    .rating{display:flex;gap:6px;align-items:center;}
+    .rating input{width:auto;}
+    button{margin-top:1.5rem;padding:12px 24px;font-size:1rem;background:#0066ff;color:#fff;border:none;border-radius:4px;cursor:pointer;}
+    button:disabled{background:#999;cursor:not-allowed;}
+    .msg{margin-top:1rem;padding:12px;border-radius:4px;text-align:center;}
+    .success{background:#e6f7e6;color:#0a6b0a;}
+    .error{background:#fde8e8;color:#b00020;}
+    .preview img, .preview video{max-width:100%;margin-top:10px;border-radius:8px;}
+  </style>
+</head>
+<body>
+
+<h1>Fan Review</h1>
+
+<form id="fanReviewForm" enctype="multipart/form-data">
+  <label for="fanName">Your Name *</label>
+  <input type="text" id="fanName" name="fanName" required>
+
+  <label for="showAttended">Show Attended *</label>
+  <input type="text" id="showAttended" name="showAttended" required placeholder="e.g. Taylor Swift – The Eras Tour">
+
+  <label for="artistReviewed">Artist *</label>
+  <input type="text" id="artistReviewed" name="artistReviewed" required placeholder="e.g. Taylor Swift">
+
+  <label for="venueName">Venue *</label>
+  <input type="text" id="venueName" name="venueName" required placeholder="e.g. SoFi Stadium">
+
+  <label for="date">Date of Show *</label>
+  <input type="date" id="date" name="date" required>
+
+  <fieldset>
+    <legend>Performance (1 = low, 5 = high)</legend>
+    <div class="rating"><label>Rating</label><input type="number" name="rating" min="1" max="5" required></div>
+    <div class="rating"><label>Energy</label><input type="number" name="energy" min="1" max="5" required></div>
+    <div class="rating"><label>Stage Presence</label><input type="number" name="stagePresence" min="1" max="5" required></div>
+    <div class="rating"><label>Crowd Reaction</label><input type="number" name="crowdReaction" min="1" max="5" required></div>
+    <div class="rating"><label>Originality</label><input type="number" name="originality" min="1" max="5" required></div>
+    <div class="rating"><label>Musicianship</label><input type="number" name="musicianship" min="1" max="5" required></div>
+    <div class="rating"><label>Audio Quality</label><input type="number" name="audioQuality" min="1" max="5" required></div>
+    <div class="rating"><label>Venue Comfort</label><input type="number" name="venueComfort" min="1"" max="5" required></div>
+  </fieldset>
+
+  <label for="standoutMoment">Standout Moment</label>
+  <textarea id="standoutMoment" name="standoutMoment" rows="2"></textarea>
+
+  <label for="overallExperience">Overall Experience</label>
+  <textarea id="overallExperience" name="overallExperience" rows="3"></textarea>
+
+  <label for="livePresence">Live Presence</label>
+  <textarea id="livePresence" name="livePresence" rows="2"></textarea>
+
+  <label for="favoriteSongPerformed">Favorite Song</label>
+  <input type="text" id="favoriteSongPerformed" name="favoriteSongPerformed">
+
+  <label for="wouldRecommendVenue">Recommend Venue?</label>
+  <select id="wouldRecommendVenue" name="wouldRecommendVenue">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
+
+  <label for="attendAgain">Attend Again?</label>
+  <select id="attendAgain" name="attendAgain">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
+
+  <label for="recommendArtist">Recommend Artist?</label>
+  <select id="recommendArtist" name="recommendArtist">
+    <option value="Yes">Yes</option>
+    <option value="No">No</option>
+  </select>
+
+  <label for="discoverySource">How Did You Discover?</label>
+  <select id="discoverySource" name="discoverySource">
+    <option value="Social Media">Social Media</option>
+    <option value="Friend">Friend</option>
+    <option value="Radio">Radio</option>
+    <option value="Other">Other</option>
+  </select>
+
+  <label for="crowdSizeEstimate">Crowd Size Estimate</label>
+  <input type="number" id="crowdSizeEstimate" name="crowdSizeEstimate" min="0">
+
+  <label for="showCount">Your Total Shows</label>
+  <input type="number" id="showCount" name="showCount" min="0">
+
+  <label for="reviewWeight">Review Influence (1-10)</label>
+  <input type="number" id="reviewWeight" name="reviewWeight" min="1" max="10">
+
+  <label for="mediaUpload">Upload Photo/Video (optional)</label>
+  <input type="file" id="mediaUpload" name="mediaUpload" accept="image/*,video/*">
+  <div class="preview" id="preview"></div>
+
+  <button type="submit" id="submitBtn">Submit Review</button>
+</form>
+
+<div id="msg"></div>
+
+<script type="module">
+const SUPABASE_URL  = 'https://qwickgmrhqdnqaqxuuwk.supabase.co';
+const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc4MDg5MSwiZXhwIjoyMDc1MzU2ODkxfQ.8E9sMUkA3o6V2pG8xL-TIup482Eg_rTwuszHQgzmG4A8';
+const BUCKET_NAME   = 'review-media';
+const TABLE_NAME    = 'fan_reviews';
+
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+const $ = id => document.getElementById(id);
+const msgEl = $('msg');
+const previewEl = $('preview');
+
+function showMsg(t, e=false){ msgEl.textContent=t; msgEl.className=e?'msg error':'msg success'; }
+
+$('mediaUpload').addEventListener('change', e => {
+  const file = e.target.files[0];
+  previewEl.innerHTML = '';
+  if (file) {
+    const url = URL.createObjectURL(file);
+    if (file.type.startsWith('image/')) {
+      previewEl.innerHTML = `<img src="${url}" alt="Preview">`;
+    } else if (file.type.startsWith('video/')) {
+      previewEl.innerHTML = `<video src="${url}" controls></video>`;
+    }
+  }
+});
+
+$('fanReviewForm').addEventListener('submit', async e => {
+  e.preventDefault();
+  $('submitBtn').disabled = true;
+  showMsg('Submitting…');
+
+  const form = new FormData(e.target);
+  const payload = {};
+
+  for (let [k, v] of form.entries()) {
+    if (k !== 'mediaUpload') payload[k] = v;
+  }
+
+  const metrics = ['energy','stagePresence','crowdReaction','originality','musicianship'];
+  const sum = metrics.reduce((s,m) => s + (parseFloat(payload[m])||0), 0);
+  payload.totalReviewScore = (sum / metrics.length).toFixed(2);
+
+  const showDate = new Date(payload.date);
+  const now = new Date();
+  payload.hoursSince = Math.floor((now - showDate) / 36e5);
+  payload.daysSinceReview = Math.floor((now - showDate) / 864e5);
+  payload.createdTime = now.toISOString();
+
+  let mediaUrl = null;
+  if ($('mediaUpload').files[0]) {
+    const file = $('mediaUpload').files[0];
+    const ext = file.name.split('.').pop();
+    const name = `${Date.now()}_${Math.random().toString(36).substr(2,9)}.${ext}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from(BUCKET_NAME)
+      .upload(`reviews/${name}`, file, { cacheControl: '3600', upsert: false });
+
+    if (uploadError) {
+      showMsg(`Upload failed: ${uploadError.message}`, true);
+      $('submitBtn').disabled = false;
+      return;
+    }
+
+    const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`reviews/${name}`);
+    mediaUrl = data.publicUrl;
+    payload.mediaUpload = mediaUrl;
+  }
+
+  const { error } = await supabase
+    .from(TABLE_NAME)
+    .insert([payload]);
+
+  if (error) {
+    showMsg(`Error: ${error.message}`, true);
+  } else {
+    showMsg('Review saved! Media uploaded. Thank you!');
+    e.target.reset();
+    previewEl.innerHTML = '';
+  }
+
+  $('submitBtn').disabled = false;
+});
+</script>
+</body>
+</html>
