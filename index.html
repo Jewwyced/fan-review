@@ -6,6 +6,7 @@
   <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     :root {
       --primary: #0066ff;
@@ -14,32 +15,53 @@
       --card: #ffffff;
       --text: #1f2937;
       --border: #e5e7eb;
+      --shadow: 0 10px 25px rgba(0,0,0,0.05);
     }
-    * { box-sizing: border-box; }
+    [data-theme="dark"] {
+      --bg: #0f172a;
+      --card: #1e293b;
+      --text: #f1f5f9;
+      --border: #334155;
+      --shadow: 0 10px 25px rgba(0,0,0,0.3);
+    }
+    * { box-sizing: border-box; margin:0; padding:0; }
     body {
       font-family: 'Inter', sans-serif;
       background: var(--bg);
       color: var(--text);
-      margin: 0;
-      padding: 1rem;
       line-height: 1.6;
+      transition: background 0.3s;
     }
     .container {
-      max-width: 640px;
+      max-width: 680px;
       margin: 2rem auto;
       background: var(--card);
-      border-radius: 16px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      border-radius: 20px;
+      box-shadow: var(--shadow);
       overflow: hidden;
     }
     header {
       background: linear-gradient(135deg, #0066ff, #00c6ff);
       color: white;
       text-align: center;
-      padding: 2rem 1rem;
+      padding: 2.5rem 1rem;
+      position: relative;
     }
-    h1 { margin: 0; font-size: 1.8rem; font-weight: 700; }
-    .subtitle { margin: 0.5rem 0 0; font-size: 1rem; opacity: 0.9; }
+    h1 { margin: 0; font-size: 2rem; font-weight: 700; }
+    .subtitle { margin: 0.5rem 0 0; font-size: 1.1rem; opacity: 0.95; }
+    .theme-toggle {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 1.2rem;
+    }
     form {
       padding: 2rem;
     }
@@ -56,37 +78,29 @@
       width: 100%;
       padding: 0.75rem 1rem;
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 1rem;
+      background: var(--card);
+      color: var(--text);
       transition: all 0.2s;
     }
     input:focus, select:focus, textarea:focus {
       outline: none;
       border-color: var(--primary);
-      box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
+      box-shadow: 0 0 0 3px rgba(0,102,255,0.15);
     }
     .rating-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 1rem;
     }
-    .rating {
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-    .rating input {
-      width: 60px;
-      padding: 0.5rem;
-      text-align: center;
-    }
     .stars {
       display: flex;
-      gap: 4px;
+      gap: 6px;
     }
     .star {
-      font-size: 1.4rem;
-      color: #ddd;
+      font-size: 1.5rem;
+      color: #cbd5e1;
       cursor: pointer;
       transition: color 0.2s;
     }
@@ -98,8 +112,8 @@
     .preview img, .preview video {
       max-width: 100%;
       max-height: 300px;
-      border-radius: 12px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      border-radius: 16px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
     }
     button {
       width: 100%;
@@ -107,27 +121,27 @@
       background: var(--primary);
       color: white;
       border: none;
-      border-radius: 8px;
+      border-radius: 12px;
       font-size: 1.1rem;
       font-weight: 600;
       cursor: pointer;
       transition: all 0.2s;
     }
-    button:hover { background: #0052cc; }
-    button:disabled { background: #aaa; cursor: not-allowed; }
+    button:hover { background: #0052cc; transform: translateY(-1px); }
+    button:disabled { background: #94a3b8; cursor: not-allowed; }
     .msg {
       margin: 1.5rem 2rem;
       padding: 1rem;
-      border-radius: 8px;
+      border-radius: 12px;
       text-align: center;
       font-weight: 600;
     }
     .success { background: #d1fae5; color: #065f46; }
     .error { background: #fee2e2; color: #991b1b; }
     .progress {
-      height: 4px;
-      background: #e5e7eb;
-      border-radius: 2px;
+      height: 5px;
+      background: var(--border);
+      border-radius: 3px;
       overflow: hidden;
       margin: 1rem 2rem;
     }
@@ -135,8 +149,45 @@
       height: 100%;
       background: var(--success);
       width: 0%;
-      transition: width 0.3s;
+      transition: width 0.3s ease;
     }
+    .live-preview {
+      margin: 2rem;
+      padding: 1.5rem;
+      background: rgba(0,102,255,0.05);
+      border-radius: 16px;
+      border: 1px dashed var(--primary);
+      display: none;
+    }
+    .live-preview h3 { margin-bottom: 1rem; color: var(--primary); }
+    .live-preview p { margin: 0.5rem 0; font-size: 0.95rem; }
+    .share-btn {
+      margin-top: 1rem;
+      background: #10b981;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border-radius: 8px;
+      text-decoration: none;
+      display: inline-block;
+      font-weight: 600;
+    }
+    .venue-results {
+      max-height: 200px;
+      overflow-y: auto;
+      margin-top: 8px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: var(--card);
+      display: none;
+    }
+    .venue-item {
+      padding: 12px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid var(--border);
+      transition: background 0.2s;
+    }
+    .venue-item:hover { background: rgba(0,102,255,0.1); }
+    .venue-item:last-child { border-bottom: none; }
   </style>
 </head>
 <body>
@@ -144,7 +195,8 @@
 <div class="container">
   <header>
     <h1>Fan Review</h1>
-    <p class="subtitle">Tell us about your live music experience</p>
+    <p class="subtitle">Your voice shapes the live music scene</p>
+    <button class="theme-toggle" id="themeToggle">Moon</button>
   </header>
 
   <form id="form">
@@ -154,13 +206,19 @@
     </div>
 
     <div class="field">
-      <label>Show Attended *</label>
-      <input type="text" name="show_attended" required placeholder="e.g. Taylor Swift – The Eras Tour">
+      <label>Artist Reviewed *</label>
+      <input type="text" name="artist_reviewed" required placeholder="e.g. Taylor Swift">
     </div>
 
     <div class="field">
-      <label>Artist Reviewed *</label>
-      <input type="text" name="artist_reviewed" required placeholder="e.g. Taylor Swift">
+      <label>Show Attended *</label>
+      <input type="text" name="show_attended" required placeholder="e.g. The Eras Tour">
+    </div>
+
+    <div class="field">
+      <label>Venue Name *</label>
+      <input type="text" name="venue_name" id="venueSearch" required placeholder="Search venue...">
+      <div id="venueResults" class="venue-results"></div>
     </div>
 
     <div class="field">
@@ -169,14 +227,24 @@
     </div>
 
     <div class="field">
+      <label>How Many Times Have You Seen This Artist?</label>
+      <input type="number" name="show_count" min="1" value="1">
+    </div>
+
+    <div class="field">
+      <label>Crowd Size Estimate</label>
+      <input type="number" name="crowd_size_estimate" min="0" placeholder="e.g. 15000">
+    </div>
+
+    <div class="field">
       <label>Rate the Performance (1–5)</label>
       <div class="rating-grid">
-        <div class="rating"><span>Rating</span><div class="stars" data-field="rating"></div></div>
-        <div class="rating"><span>Energy</span><div class="stars" data-field="energy"></div></div>
-        <div class="rating"><span>Stage Presence</span><div class="stars" data-field="stage_presence"></div></div>
-        <div class="rating"><span>Crowd Reaction</span><div class="stars" data-field="crowd_reaction"></div></div>
-        <div class="rating"><span>Originality</span><div class="stars" data-field="originality"></div></div>
-        <div class="rating"><span>Musicianship</span><div class="stars" data-field="musicianship"></div></div>
+        <div><span>Rating</span><div class="stars" data-field="rating"></div></div>
+        <div><span>Energy</span><div class="stars" data-field="energy"></div></div>
+        <div><span>Stage Presence</span><div class="stars" data-field="stage_presence"></div></div>
+        <div><span>Crowd Reaction</span><div class="stars" data-field="crowd_reaction"></div></div>
+        <div><span>Originality</span><div class="stars" data-field="originality"></div></div>
+        <div><span>Musicianship</span><div class="stars" data-field="musicianship"></div></div>
       </div>
       <input type="hidden" name="rating">
       <input type="hidden" name="energy">
@@ -188,12 +256,12 @@
 
     <div class="field">
       <label>Standout Moment</label>
-      <textarea name="standout_moment" rows="2" placeholder="The guitar solo was insane!"></textarea>
+      <textarea name="standout_moment" rows="2" placeholder="That guitar solo was insane!"></textarea>
     </div>
 
     <div class="field">
       <label>Live Presence</label>
-      <textarea name="live_presence" rows="2" placeholder="How did the artist connect with the crowd?"></textarea>
+      <textarea name="live_presence" rows="2" placeholder="How did they connect with the crowd?"></textarea>
     </div>
 
     <div class="field">
@@ -216,11 +284,12 @@
 
     <div class="field">
       <label>Review Influence (1–10)</label>
-      <input type="number" name="review_weight" min="1" max="10" value="5">
+      <input type="range" name="review_weight" min="1" max="10" value="5" style="width:100%;">
+      <div style="text-align:center; margin-top:8px;"><span id="weightValue">5</span>/10</div>
     </div>
 
     <div class="field">
-      <label>Upload Photo/Video (optional)</label>
+      <label>Upload Photo/Video</label>
       <input type="file" id="file" name="media_upload" accept="image/*,video/*">
       <div class="preview" id="preview"></div>
     </div>
@@ -230,6 +299,14 @@
 
   <div class="progress"><div class="progress-bar" id="progress"></div></div>
   <div id="msg" class="msg"></div>
+
+  <div class="live-preview" id="livePreview">
+    <h3>Live Preview</h3>
+    <p><strong>Artist:</strong> <span id="prevArtist"></span></p>
+    <p><strong>Show:</strong> <span id="prevShow"></span></p>
+    <p><strong>Venue:</strong> <span id="prevVenue"></span></p>
+    <p><strong>Rating:</strong> <span id="prevRating"></span> stars</p>
+  </div>
 </div>
 
 <script type="module">
@@ -245,23 +322,78 @@
   const preview = document.getElementById('preview');
   const btn = document.getElementById('btn');
   const progress = document.getElementById('progress');
+  const livePreview = document.getElementById('livePreview');
+  const themeToggle = document.getElementById('themeToggle');
 
-  // Star Rating System
+  // Theme Toggle
+  themeToggle.onclick = () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
+    themeToggle.textContent = isDark ? 'Moon' : 'Sun';
+  };
+
+  // Star Rating
   document.querySelectorAll('.stars').forEach(container => {
     const field = container.dataset.field;
     let rating = 0;
     for (let i = 1; i <= 5; i++) {
       const star = document.createElement('span');
       star.className = 'star';
-      star.innerHTML = '★';
+      star.innerHTML = 'Star';
       star.onclick = () => {
         rating = i;
         document.querySelector(`input[name="${field}"]`).value = i;
         container.querySelectorAll('.star').forEach((s, idx) => {
           s.classList.toggle('filled', idx < i);
         });
+        updateLivePreview();
       };
       container.appendChild(star);
+    }
+  });
+
+  // Review Weight Slider
+  const weightInput = document.querySelector('input[name="review_weight"]');
+  const weightValue = document.getElementById('weightValue');
+  weightInput.oninput = () => {
+    weightValue.textContent = weightInput.value;
+  };
+
+  // Venue Search
+  const venueInput = document.getElementById('venueSearch');
+  const venueResults = document.getElementById('venueResults');
+  venueInput.addEventListener('input', async () => {
+    const query = venueInput.value.trim();
+    if (query.length < 2) {
+      venueResults.style.display = 'none';
+      return;
+    }
+    const { data } = await supabase
+      .from('Venues')
+      .select('Venue Name, City')
+      .ilike('Venue Name', `%${query}%`)
+      .limit(5);
+    venueResults.innerHTML = '';
+    if (data?.length) {
+      data.forEach(v => {
+        const div = document.createElement('div');
+        div.className = 'venue-item';
+        div.textContent = `${v['Venue Name']} – ${v.City}`;
+        div.onclick = () => {
+          venueInput.value = v['Venue Name'];
+          venueResults.style.display = 'none';
+          updateLivePreview();
+        };
+        venueResults.appendChild(div);
+      });
+      venueResults.style.display = 'block';
+    } else {
+      venueResults.style.display = 'none';
+    }
+  });
+  document.addEventListener('click', e => {
+    if (!venueInput.contains(e.target) && !venueResults.contains(e.target)) {
+      venueResults.style.display = 'none';
     }
   });
 
@@ -271,13 +403,31 @@
     preview.innerHTML = '';
     if (file) {
       const url = URL.createObjectURL(file);
-      if (file.type.startsWith('image/')) {
-        preview.innerHTML = `<img src="${url}">`;
-      } else if (file.type.startsWith('video/')) {
-        preview.innerHTML = `<video src="${url}" controls></video>`;
-      }
+      preview.innerHTML = file.type.startsWith('image/') 
+        ? `<img src="${url}">` 
+        : `<video src="${url}" controls></video>`;
     }
   };
+
+  // Live Preview Update
+  function updateLivePreview() {
+    const artist = document.querySelector('input[name="artist_reviewed"]').value;
+    const show = document.querySelector('input[name="show_attended"]').value;
+    const venue = document.querySelector('input[name="venue_name"]').value;
+    const rating = document.querySelector('input[name="rating"]').value;
+    if (artist || show || venue || rating) {
+      document.getElementById('prevArtist').textContent = artist || '—';
+      document.getElementById('prevShow').textContent = show || '—';
+      document.getElementById('prevVenue').textContent = venue || '—';
+      document.getElementById('prevRating').textContent = rating || '—';
+      livePreview.style.display = 'block';
+    } else {
+      livePreview.style.display = 'none';
+    }
+  }
+  document.querySelectorAll('input, textarea, select').forEach(el => {
+    el.addEventListener('input', updateLivePreview);
+  });
 
   // Submit
   document.getElementById('form').onsubmit = async e => {
@@ -293,9 +443,12 @@
     const data = {
       review_id,
       fan_name: form.get('fan_name'),
-      show_attended: form.get('show_attended'),
       artist_reviewed: form.get('artist_reviewed'),
+      show_attended: form.get('show_attended'),
+      venue_name: form.get('venue_name'),
       date: form.get('date'),
+      show_count: parseInt(form.get('show_count')) || 1,
+      crowd_size_estimate: parseInt(form.get('crowd_size_estimate')) || null,
       rating: parseInt(form.get('rating')) || 0,
       energy: parseInt(form.get('energy')) || 0,
       stage_presence: parseInt(form.get('stage_presence')) || 0,
@@ -312,14 +465,11 @@
       has_media: false
     };
 
-    // Upload with progress
     const file = form.get('media_upload');
     if (file && file.size > 0) {
       const ext = file.name.split('.').pop();
       const path = `reviews/${review_id}.${ext}`;
-      const { error: upErr } = await supabase.storage
-        .from(BUCKET)
-        .upload(path, file, { upsert: true });
+      const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true });
       if (upErr && !upErr.message.includes('already exists')) {
         msg.textContent = 'Upload failed';
         msg.className = 'msg error';
@@ -334,7 +484,6 @@
       progress.style.width = '50%';
     }
 
-    // Save
     const { error } = await supabase.from(TABLE).upsert([data], { onConflict: 'review_id' });
     progress.style.width = '100%';
 
@@ -342,12 +491,18 @@
       msg.textContent = 'Error: ' + error.message;
       msg.className = 'msg error';
     } else {
-      msg.textContent = 'Review saved! Thank you!';
+      msg.innerHTML = `
+        Review saved! Thank you!<br>
+        <a href="https://twitter.com/intent/tweet?text=I just reviewed ${data.artist_reviewed} on Fan Review! 🔥&url=https://jewwyced.github.io/fan-review/" 
+           target="_blank" class="share-btn">Share on X</a>
+      `;
       msg.className = 'msg success';
+      confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
       e.target.reset();
       preview.innerHTML = '';
+      livePreview.style.display = 'none';
       document.querySelectorAll('.stars').forEach(c => c.innerHTML = '');
-      setTimeout(() => location.reload(), 1500);
+      setTimeout(() => location.reload(), 3000);
     }
     btn.disabled = false;
     setTimeout(() => progress.style.width = '0%', 1000);
