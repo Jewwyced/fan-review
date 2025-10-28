@@ -108,32 +108,40 @@
     msg.className = 'msg';
 
     const form = new FormData(e.target);
-    const data = {};
+    const now = new Date().toISOString();
 
-    // EXACT COLUMN NAMES FROM YOUR SUPABASE
-    data['fan_name'] = form.get('fan_name');
-    data['show_attended'] = form.get('show_attended');
-    data['artist_reviewed'] = form.get('artist_reviewed');
-    data['date'] = form.get('date');
-    data['rating'] = form.get('rating');
-    data['energy'] = form.get('energy');
-    data['stage_presence'] = form.get('stage_presence');
-    data['crowd_reaction'] = form.get('crowd_reaction');
-    data['originality'] = form.get('originality');
-    data['musicianship'] = form.get('musicianship');
-    data['standout_moment'] = form.get('standout_moment');
-    data['live_presence'] = form.get('live_presence');
-    data['recommend_artist'] = form.get('recommend_artist');
-    data['discovery_source'] = form.get('discovery_source');
-    data['review_weight'] = form.get('review_weight');
+    // GENERATE UNIQUE review_id
+    const review_id = `rev_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
+
+    const data = {
+      review_id: review_id,
+      fan_name: form.get('fan_name'),
+      show_attended: form.get('show_attended'),
+      artist_reviewed: form.get('artist_reviewed'),
+      date: form.get('date'),
+      rating: parseInt(form.get('rating')),
+      energy: parseInt(form.get('energy')),
+      stage_presence: parseInt(form.get('stage_presence')),
+      crowd_reaction: parseInt(form.get('crowd_reaction')),
+      originality: parseInt(form.get('originality')),
+      musicianship: parseInt(form.get('musicianship')),
+      standout_moment: form.get('standout_moment'),
+      live_presence: form.get('live_presence'),
+      recommend_artist: form.get('recommend_artist'),
+      discovery_source: form.get('discovery_source'),
+      review_weight: form.get('review_weight') ? parseInt(form.get('review_weight')) : null,
+      created_time: now,
+      hours_since: 0,
+      has_media: false
+    };
 
     // Upload media
     const file = form.get('media_upload');
     if (file && file.size > 0) {
       const ext = file.name.split('.').pop();
-      const path = `reviews/${Date.now()}_${Math.random().toString(36).slice(2, 9)}.${ext}`;
-      const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file);
-      if (upErr) {
+      const path = `reviews/${review_id}.${ext}`;
+      const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true });
+      if (upErr && upErr.message !== 'The resource already exists') {
         msg.textContent = 'Upload failed: ' + upErr.message;
         msg.className = 'msg error';
         btn.disabled = false;
@@ -141,10 +149,13 @@
       }
       const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
       data['media_upload'] = urlData.publicUrl;
+      data['has_media'] = true;
     }
 
-    // INSERT
-    const { error } = await supabase.from(TABLE).insert([data]);
+    // INSERT WITH UPSERT TO PREVENT DUPLICATES
+    const { error } = await supabase
+      .from(TABLE)
+      .upsert([data], { onConflict: 'review_id' });
 
     if (error) {
       msg.textContent = 'Error: ' + error.message;
