@@ -6,17 +6,15 @@
   <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <style>
-    body{font-family:Inter,system-ui,sans-serif;max-width:680px;margin:2rem auto;padding:0 1rem;}
+    body{font-family:Arial,sans-serif;max-width:600px;margin:2rem auto;padding:0 1rem;}
     h1{text-align:center;}
-    label{display:block;margin:12px 0 4px;font-weight:600;}
+    label{display:block;margin:10px 0 4px;font-weight:bold;}
     input,select,textarea{width:100%;padding:8px;font-size:1rem;border:1px solid #ccc;border-radius:4px;}
-    .rating{display:flex;gap:6px;align-items:center;}
-    .rating input{width:auto;}
-    button{margin-top:1.5rem;padding:12px 24px;font-size:1rem;background:#0066ff;color:#fff;border:none;border-radius:4px;cursor:pointer;}
-    button:disabled{background:#999;cursor:not-allowed;}
-    .msg{margin-top:1rem;padding:12px;border-radius:4px;text-align:center;}
-    .success{background:#e6f7e6;color:#0a6b0a;}
-    .error{background:#fde8e8;color:#b00020;}
+    button{margin-top:20px;padding:12px 24px;background:#0066ff;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:1rem;}
+    button:disabled{background:#aaa;cursor:not-allowed;}
+    .msg{margin-top:15px;padding:12px;border-radius:4px;text-align:center;}
+    .success{background:#d4edda;color:#155724;}
+    .error{background:#f8d7da;color:#721c24;}
     .preview img, .preview video{max-width:100%;margin-top:10px;border-radius:8px;}
   </style>
 </head>
@@ -24,142 +22,129 @@
 
 <h1>Fan Review</h1>
 
-<form id="fanReviewForm" enctype="multipart/form-data">
-  <label for="fanName">Your Name *</label>
-  <input type="text" id="fanName" name="Fan Name" required>
+<form id="form">
+  <label>Your Name *</label>
+  <input type="text" name="fan name" required>
 
-  <label for="showAttended">Show Attended *</label>
-  <input type="text" id="showAttended" name="Show Attended" required placeholder="e.g. Taylor Swift – The Eras Tour">
+  <label>Show Attended *</label>
+  <input type="text" name="show attended" required placeholder="e.g. Taylor Swift – The Eras Tour">
 
-  <label for="artistReviewed">Artist Reviewed *</label>
-  <input type="text" id="artistReviewed" name="Artist Reviewed" required placeholder="e.g. Taylor Swift">
+  <label>Artist Reviewed *</label>
+  <input type="text" name="artist reviewed" required placeholder="e.g. Taylor Swift">
 
-  <label for="date">Date of Show *</label>
-  <input type="date" id="date" name="Date" required>
+  <label>Date of Show *</label>
+  <input type="date" name="date" required>
 
   <fieldset>
-    <legend>Performance (1 = low, 5 = high)</legend>
-    <div class="rating"><label>Rating</label><input type="number" name="Rating" min="1" max="5" required></div>
-    <div class="rating"><label>Energy</label><input type="number" name="Energy" min="1" max="5" required></div>
-    <div class="rating"><label>Stage Presence</label><input type="number" name="Stage Presence" min="1" max="5" required></div>
-    <div class="rating"><label>Crowd Reaction</label><input type="number" name="Crowd Reaction" min="1" max="5" required></div>
-    <div class="rating"><label>Originality</label><input type="number" name="Originality" min="1" max="5" required></div>
-    <div class="rating"><label>Musicianship</label><input type="number" name="Musicianship" min="1" max="5" required></div>
+    <legend>Rate (1 = low, 5 = high)</legend>
+    <label>Rating <input type="number" name="rating" min="1" max="5" required></label>
+    <label>Energy <input type="number" name="energy" min="1" max="5" required></label>
+    <label>Stage Presence <input type="number" name="stage presence" min="1" max="5" required></label>
+    <label>Crowd Reaction <input type="number" name="crowd reaction" min="1" max="5" required></label>
+    <label>Originality <input type="number" name="originality" min="1" max="5" required></label>
+    <label>Musicianship <input type="number" name="musicianship" min="1" max="5" required></label>
   </fieldset>
 
-  <label for="standoutMoment">Standout Moment</label>
-  <textarea id="standoutMoment" name="Standout Moment" rows="2"></textarea>
+  <label>Standout Moment</label>
+  <textarea name="standout moment" rows="2"></textarea>
 
-  <label for="livePresence">Live Presence</label>
-  <textarea id="livePresence" name="Live Presence" rows="2"></textarea>
+  <label>Live Presence</label>
+  <textarea name="live presence" rows="2"></textarea>
 
-  <label for="recommendArtist">Recommend Artist?</label>
-  <select id="recommendArtist" name="Recommend Artist">
+  <label>Recommend Artist?</label>
+  <select name="recommend artist">
     <option value="Yes">Yes</option>
     <option value="No">No</option>
   </select>
 
-  <label for="discoverySource">How Did You Discover?</label>
-  <select id="discoverySource" name="Discovery Source">
+  <label>How Did You Discover?</label>
+  <select name="discovery source">
     <option value="Social Media">Social Media</option>
     <option value="Friend">Friend</option>
     <option value="Radio">Radio</option>
     <option value="Other">Other</option>
   </select>
 
-  <label for="showCount">How Many Shows Have You Seen?</label>
-  <input type="number" id="showCount" name="Show Count" min="0">
+  <label>How Many Shows Have You Seen?</label>
+  <input type="number" name="show count" min="0">
 
-  <label for="reviewWeight">Review Influence (1-10)</label>
-  <input type="number" id="reviewWeight" name="Review Weight" min="1" max="10">
+  <label>Review Influence (1-10)</label>
+  <input type="number" name="review weight" min="1" max="10">
 
-  <label for="mediaUpload">Upload Photo/Video (optional)</label>
-  <input type="file" id="mediaUpload" name="mediaUpload" accept="image/*,video/*">
+  <label>Upload Photo/Video (optional)</label>
+  <input type="file" id="file" name="media upload" accept="image/*,video/*">
   <div class="preview" id="preview"></div>
 
-  <button type="submit" id="submitBtn">Submit Review</button>
+  <button type="submit" id="btn">Submit Review</button>
 </form>
 
-<div id="msg"></div>
+<div id="msg" class="msg"></div>
 
 <script type="module">
-  const SUPABASE_URL  = 'https://qwickgmrhqdnqaqxuuwk.supabase.co';
-  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODA4OTEsImV4cCI6MjA3NTM1Njg5MX0.CxC1nH6Xvrggn_VNMmjuomeQQVdAfCwyPHJU81ZGjOM';
-  const BUCKET_NAME   = 'review-media';
-  const TABLE_NAME    = 'fan_reviews';
+  const SUPABASE_URL = 'https://qwickgmrhqdnqaqxuuwk.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODA4OTEsImV4cCI6MjA3NTM1Njg5MX0.CxC1nH6Xvrggn_VNMmjuomeQQVdAfCwyPHJU81ZGjOM';
+  const BUCKET = 'review-media';
+  const TABLE = 'fan_reviews';
 
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
   const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  const $ = id => document.getElementById(id);
-  const msgEl = $('msg');
-  const previewEl = $('preview');
+  const msg = document.getElementById('msg');
+  const preview = document.getElementById('preview');
+  const btn = document.getElementById('btn');
 
-  function showMsg(t, e = false) {
-    msgEl.textContent = t;
-    msgEl.className = e ? 'msg error' : 'msg success';
-  }
-
-  $('mediaUpload').addEventListener('change', e => {
+  document.getElementById('file').onchange = e => {
     const file = e.target.files[0];
-    previewEl.innerHTML = '';
+    preview.innerHTML = '';
     if (file) {
       const url = URL.createObjectURL(file);
-      if (file.type.startsWith('image/')) {
-        previewEl.innerHTML = `<img src="${url}" alt="Preview">`;
-      } else if (file.type.startsWith('video/')) {
-        previewEl.innerHTML = `<video src="${url}" controls></video>`;
-      }
+      if (file.type.startsWith('image/')) preview.innerHTML = `<img src="${url}">`;
+      if (file.type.startsWith('video/')) preview.innerHTML = `<video src="${url}" controls></video>`;
     }
-  });
+  };
 
-  $('fanReviewForm').addEventListener('submit', async e => {
+  document.getElementById('form').onsubmit = async e => {
     e.preventDefault();
-    $('submitBtn').disabled = true;
-    showMsg('Submitting...');
+    btn.disabled = true;
+    msg.textContent = 'Submitting...';
+    msg.className = 'msg';
 
     const form = new FormData(e.target);
-    const payload = {};
-
+    const data = {};
     for (let [k, v] of form.entries()) {
-      if (k !== 'mediaUpload') payload[k] = v;
+      if (k !== 'media upload') data[k] = v;
     }
 
-    let mediaUrl = null;
-    if ($('mediaUpload').files[0]) {
-      const file = $('mediaUpload').files[0];
+    // Upload media
+    if (form.get('media upload')?.size > 0) {
+      const file = form.get('media upload');
       const ext = file.name.split('.').pop();
-      const name = `reviews/${Date.now()}_${Math.random().toString(36).substr(2,9)}.${ext}`;
-
-      const { error: uploadError } = await supabase.storage
-        .from(BUCKET_NAME)
-        .upload(name, file, { cacheControl: '3600', upsert: false });
-
-      if (uploadError) {
-        showMsg(`Upload failed: ${uploadError.message}`, true);
-        $('submitBtn').disabled = false;
+      const path = `reviews/${Date.now()}_${Math.random().toString(36).slice(2, 9)}.${ext}`;
+      const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file);
+      if (upErr) {
+        msg.textContent = 'Upload failed: ' + upErr.message;
+        msg.className = 'msg error';
+        btn.disabled = false;
         return;
       }
-
-      const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(name);
-      mediaUrl = data.publicUrl;
-      payload['Media Upload'] = mediaUrl;
+      const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
+      data['media upload'] = urlData.publicUrl;
     }
 
-    const { error } = await supabase
-      .from(TABLE_NAME)
-      .insert([payload]);
+    // Insert into fan_reviews
+    const { error } = await supabase.from(TABLE).insert([data]);
 
     if (error) {
-      showMsg(`Error: ${error.message}`, true);
+      msg.textContent = 'Error: ' + error.message;
+      msg.className = 'msg error';
     } else {
-      showMsg('Review saved! Thank you!');
+      msg.textContent = 'Review saved! Thank you!';
+      msg.className = 'msg success';
       e.target.reset();
-      previewEl.innerHTML = '';
+      preview.innerHTML = '';
     }
-
-    $('submitBtn').disabled = false;
-  });
+    btn.disabled = false;
+  };
 </script>
 </body>
 </html>
