@@ -26,78 +26,52 @@
 
 <form id="fanReviewForm" enctype="multipart/form-data">
   <label for="fanName">Your Name *</label>
-  <input type="text" id="fanName" name="fanName" required>
+  <input type="text" id="fanName" name="Fan Name" required>
 
   <label for="showAttended">Show Attended *</label>
-  <input type="text" id="showAttended" name="showAttended" required placeholder="e.g. Taylor Swift – The Eras Tour">
+  <input type="text" id="showAttended" name="Show Attended" required placeholder="e.g. Taylor Swift – The Eras Tour">
 
-  <label for="artistReviewed">Artist *</label>
-  <input type="text" id="artistReviewed" name="artistReviewed" required placeholder="e.g. Taylor Swift">
-
-  <label for="venueName">Venue *</label>
-  <input type="text" id="venueName" name="venueName" required placeholder="e.g. SoFi Stadium">
+  <label for="artistReviewed">Artist Reviewed *</label>
+  <input type="text" id="artistReviewed" name="Artist Reviewed" required placeholder="e.g. Taylor Swift">
 
   <label for="date">Date of Show *</label>
-  <input type="date" id="date" name="date" required>
+  <input type="date" id="date" name="Date" required>
 
   <fieldset>
     <legend>Performance (1 = low, 5 = high)</legend>
-    <div class="rating"><label>Rating</label><input type="number" name="rating" min="1" max="5" required></div>
-    <div class="rating"><label>Energy</label><input type="number" name="energy" min="1" max="5" required></div>
-    <div class="rating"><label>Stage Presence</label><input type="number" name="stagePresence" min="1" max="5" required></div>
-    <div class="rating"><label>Crowd Reaction</label><input type="number" name="crowdReaction" min="1" max="5" required></div>
-    <div class="rating"><label>Originality</label><input type="number" name="originality" min="1" max="5" required></div>
-    <div class="rating"><label>Musicianship</label><input type="number" name="musicianship" min="1" max="5" required></div>
-    <div class="rating"><label>Audio Quality</label><input type="number" name="audioQuality" min="1" max="5" required></div>
-    <div class="rating"><label>Venue Comfort</label><input type="number" name="venueComfort" min="1" max="5" required></div>
+    <div class="rating"><label>Rating</label><input type="number" name="Rating" min="1" max="5" required></div>
+    <div class="rating"><label>Energy</label><input type="number" name="Energy" min="1" max="5" required></div>
+    <div class="rating"><label>Stage Presence</label><input type="number" name="Stage Presence" min="1" max="5" required></div>
+    <div class="rating"><label>Crowd Reaction</label><input type="number" name="Crowd Reaction" min="1" max="5" required></div>
+    <div class="rating"><label>Originality</label><input type="number" name="Originality" min="1" max="5" required></div>
+    <div class="rating"><label>Musicianship</label><input type="number" name="Musicianship" min="1" max="5" required></div>
   </fieldset>
 
   <label for="standoutMoment">Standout Moment</label>
-  <textarea id="standoutMoment" name="standoutMoment" rows="2"></textarea>
-
-  <label for="overallExperience">Overall Experience</label>
-  <textarea id="overallExperience" name="overallExperience" rows="3"></textarea>
+  <textarea id="standoutMoment" name="Standout Moment" rows="2"></textarea>
 
   <label for="livePresence">Live Presence</label>
-  <textarea id="livePresence" name="livePresence" rows="2"></textarea>
-
-  <label for="favoriteSongPerformed">Favorite Song</label>
-  <input type="text" id="favoriteSongPerformed" name="favoriteSongPerformed">
-
-  <label for="wouldRecommendVenue">Recommend Venue?</label>
-  <select id="wouldRecommendVenue" name="wouldRecommendVenue">
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-  </select>
-
-  <label for="attendAgain">Attend Again?</label>
-  <select id="attendAgain" name="attendAgain">
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-  </select>
+  <textarea id="livePresence" name="Live Presence" rows="2"></textarea>
 
   <label for="recommendArtist">Recommend Artist?</label>
-  <select id="recommendArtist" name="recommendArtist">
+  <select id="recommendArtist" name="Recommend Artist">
     <option value="Yes">Yes</option>
     <option value="No">No</option>
   </select>
 
   <label for="discoverySource">How Did You Discover?</label>
-  <select id="discoverySource" name="discoverySource">
+  <select id="discoverySource" name="Discovery Source">
     <option value="Social Media">Social Media</option>
     <option value="Friend">Friend</option>
     <option value="Radio">Radio</option>
     <option value="Other">Other</option>
   </select>
 
-  <label for="crowdSizeEstimate">Crowd Size Estimate</label>
-  <input type="number" id="crowdSizeEstimate" name="crowdSizeEstimate" min="0">
-
-  <label for="showCount">Your Total Shows</label>
-  <input type="number" id="showCount" name="showCount" min="0">
+  <label for="showCount">How Many Shows Have You Seen?</label>
+  <input type="number" id="showCount" name="Show Count" min="0">
 
   <label for="reviewWeight">Review Influence (1-10)</label>
-  <input type="number" id="reviewWeight" name="reviewWeight" min="1" max="10">
+  <input type="number" id="reviewWeight" name="Review Weight" min="1" max="10">
 
   <label for="mediaUpload">Upload Photo/Video (optional)</label>
   <input type="file" id="mediaUpload" name="mediaUpload" accept="image/*,video/*">
@@ -109,7 +83,6 @@
 <div id="msg"></div>
 
 <script type="module">
-  // SECURE: Using anon key (safe for public forms)
   const SUPABASE_URL  = 'https://qwickgmrhqdnqaqxuuwk.supabase.co';
   const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODA4OTEsImV4cCI6MjA3NTM1Njg5MX0.CxC1nH6Xvrggn_VNMmjuomeQQVdAfCwyPHJU81ZGjOM';
   const BUCKET_NAME   = 'review-media';
@@ -152,16 +125,6 @@
       if (k !== 'mediaUpload') payload[k] = v;
     }
 
-    const metrics = ['energy','stagePresence','crowdReaction','originality','musicianship'];
-    const sum = metrics.reduce((s,m) => s + (parseFloat(payload[m])||0), 0);
-    payload.totalReviewScore = (sum / metrics.length).toFixed(2);
-
-    const showDate = new Date(payload.date);
-    const now = new Date();
-    payload.hoursSince = Math.floor((now - showDate) / 36e5);
-    payload.daysSinceReview = Math.floor((now - showDate) / 864e5);
-    payload.createdTime = now.toISOString();
-
     let mediaUrl = null;
     if ($('mediaUpload').files[0]) {
       const file = $('mediaUpload').files[0];
@@ -180,7 +143,7 @@
 
       const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(name);
       mediaUrl = data.publicUrl;
-      payload.mediaUpload = mediaUrl;
+      payload['Media Upload'] = mediaUrl;
     }
 
     const { error } = await supabase
@@ -190,7 +153,7 @@
     if (error) {
       showMsg(`Error: ${error.message}`, true);
     } else {
-      showMsg('Review saved! Media uploaded. Thank you!');
+      showMsg('Review saved! Thank you!');
       e.target.reset();
       previewEl.innerHTML = '';
     }
