@@ -49,7 +49,7 @@
     <div class="rating"><label>Originality</label><input type="number" name="originality" min="1" max="5" required></div>
     <div class="rating"><label>Musicianship</label><input type="number" name="musicianship" min="1" max="5" required></div>
     <div class="rating"><label>Audio Quality</label><input type="number" name="audioQuality" min="1" max="5" required></div>
-    <div class="rating"><label>Venue Comfort</label><input type="number" name="venueComfort" min="1"" max="5" required></div>
+    <div class="rating"><label>Venue Comfort</label><input type="number" name="venueComfort" min="1" max="5" required></div>
   </fieldset>
 
   <label for="standoutMoment">Standout Moment</label>
@@ -109,90 +109,94 @@
 <div id="msg"></div>
 
 <script type="module">
-const SUPABASE_URL  = 'https://qwickgmrhqdnqaqxuuwk.supabase.co';
-const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1OTc4MDg5MSwiZXhwIjoyMDc1MzU2ODkxfQ.8E9sMUkA3o6V2pG8xL-TIup482Eg_rTwuszHQgzmG4A8';
-const BUCKET_NAME   = 'review-media';
-const TABLE_NAME    = 'fan_reviews';
+  // SECURE: Using anon key (safe for public forms)
+  const SUPABASE_URL  = 'https://qwickgmrhqdnqaqxuuwk.supabase.co';
+  const SUPABASE_KEY  = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODA4OTEsImV4cCI6MjA3NTM1Njg5MX0.CxC1nH6Xvrggn_VNMmjuomeQQVdAfCwyPHJU81ZGjOM';
+  const BUCKET_NAME   = 'review-media';
+  const TABLE_NAME    = 'fan_reviews';
 
-import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
-const $ = id => document.getElementById(id);
-const msgEl = $('msg');
-const previewEl = $('preview');
+  const $ = id => document.getElementById(id);
+  const msgEl = $('msg');
+  const previewEl = $('preview');
 
-function showMsg(t, e=false){ msgEl.textContent=t; msgEl.className=e?'msg error':'msg success'; }
-
-$('mediaUpload').addEventListener('change', e => {
-  const file = e.target.files[0];
-  previewEl.innerHTML = '';
-  if (file) {
-    const url = URL.createObjectURL(file);
-    if (file.type.startsWith('image/')) {
-      previewEl.innerHTML = `<img src="${url}" alt="Preview">`;
-    } else if (file.type.startsWith('video/')) {
-      previewEl.innerHTML = `<video src="${url}" controls></video>`;
-    }
-  }
-});
-
-$('fanReviewForm').addEventListener('submit', async e => {
-  e.preventDefault();
-  $('submitBtn').disabled = true;
-  showMsg('Submitting…');
-
-  const form = new FormData(e.target);
-  const payload = {};
-
-  for (let [k, v] of form.entries()) {
-    if (k !== 'mediaUpload') payload[k] = v;
+  function showMsg(t, e = false) {
+    msgEl.textContent = t;
+    msgEl.className = e ? 'msg error' : 'msg success';
   }
 
-  const metrics = ['energy','stagePresence','crowdReaction','originality','musicianship'];
-  const sum = metrics.reduce((s,m) => s + (parseFloat(payload[m])||0), 0);
-  payload.totalReviewScore = (sum / metrics.length).toFixed(2);
-
-  const showDate = new Date(payload.date);
-  const now = new Date();
-  payload.hoursSince = Math.floor((now - showDate) / 36e5);
-  payload.daysSinceReview = Math.floor((now - showDate) / 864e5);
-  payload.createdTime = now.toISOString();
-
-  let mediaUrl = null;
-  if ($('mediaUpload').files[0]) {
-    const file = $('mediaUpload').files[0];
-    const ext = file.name.split('.').pop();
-    const name = `${Date.now()}_${Math.random().toString(36).substr(2,9)}.${ext}`;
-
-    const { error: uploadError } = await supabase.storage
-      .from(BUCKET_NAME)
-      .upload(`reviews/${name}`, file, { cacheControl: '3600', upsert: false });
-
-    if (uploadError) {
-      showMsg(`Upload failed: ${uploadError.message}`, true);
-      $('submitBtn').disabled = false;
-      return;
-    }
-
-    const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(`reviews/${name}`);
-    mediaUrl = data.publicUrl;
-    payload.mediaUpload = mediaUrl;
-  }
-
-  const { error } = await supabase
-    .from(TABLE_NAME)
-    .insert([payload]);
-
-  if (error) {
-    showMsg(`Error: ${error.message}`, true);
-  } else {
-    showMsg('Review saved! Media uploaded. Thank you!');
-    e.target.reset();
+  $('mediaUpload').addEventListener('change', e => {
+    const file = e.target.files[0];
     previewEl.innerHTML = '';
-  }
+    if (file) {
+      const url = URL.createObjectURL(file);
+      if (file.type.startsWith('image/')) {
+        previewEl.innerHTML = `<img src="${url}" alt="Preview">`;
+      } else if (file.type.startsWith('video/')) {
+        previewEl.innerHTML = `<video src="${url}" controls></video>`;
+      }
+    }
+  });
 
-  $('submitBtn').disabled = false;
-});
+  $('fanReviewForm').addEventListener('submit', async e => {
+    e.preventDefault();
+    $('submitBtn').disabled = true;
+    showMsg('Submitting...');
+
+    const form = new FormData(e.target);
+    const payload = {};
+
+    for (let [k, v] of form.entries()) {
+      if (k !== 'mediaUpload') payload[k] = v;
+    }
+
+    const metrics = ['energy','stagePresence','crowdReaction','originality','musicianship'];
+    const sum = metrics.reduce((s,m) => s + (parseFloat(payload[m])||0), 0);
+    payload.totalReviewScore = (sum / metrics.length).toFixed(2);
+
+    const showDate = new Date(payload.date);
+    const now = new Date();
+    payload.hoursSince = Math.floor((now - showDate) / 36e5);
+    payload.daysSinceReview = Math.floor((now - showDate) / 864e5);
+    payload.createdTime = now.toISOString();
+
+    let mediaUrl = null;
+    if ($('mediaUpload').files[0]) {
+      const file = $('mediaUpload').files[0];
+      const ext = file.name.split('.').pop();
+      const name = `reviews/${Date.now()}_${Math.random().toString(36).substr(2,9)}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from(BUCKET_NAME)
+        .upload(name, file, { cacheControl: '3600', upsert: false });
+
+      if (uploadError) {
+        showMsg(`Upload failed: ${uploadError.message}`, true);
+        $('submitBtn').disabled = false;
+        return;
+      }
+
+      const { data } = supabase.storage.from(BUCKET_NAME).getPublicUrl(name);
+      mediaUrl = data.publicUrl;
+      payload.mediaUpload = mediaUrl;
+    }
+
+    const { error } = await supabase
+      .from(TABLE_NAME)
+      .insert([payload]);
+
+    if (error) {
+      showMsg(`Error: ${error.message}`, true);
+    } else {
+      showMsg('Review saved! Media uploaded. Thank you!');
+      e.target.reset();
+      previewEl.innerHTML = '';
+    }
+
+    $('submitBtn').disabled = false;
+  });
 </script>
 </body>
 </html>
