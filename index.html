@@ -5,77 +5,232 @@
   <title>Fan Review</title>
   <link rel="icon" href="data:,">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
-    body{font-family:Arial,sans-serif;max-width:600px;margin:2rem auto;padding:0 1rem;}
-    h1{text-align:center;}
-    label{display:block;margin:10px 0 4px;font-weight:bold;}
-    input,select,textarea{width:100%;padding:8px;font-size:1rem;border:1px solid #ccc;border-radius:4px;}
-    button{margin-top:20px;padding:12px 24px;background:#0066ff;color:#fff;border:none;border-radius:4px;cursor:pointer;font-size:1rem;}
-    button:disabled{background:#aaa;cursor:not-allowed;}
-    .msg{margin-top:15px;padding:12px;border-radius:4px;text-align:center;}
-    .success{background:#d4edda;color:#155724;}
-    .error{background:#f8d7da;color:#721c24;}
-    .preview img, .preview video{max-width:100%;margin-top:10px;border-radius:8px;}
+    :root {
+      --primary: #0066ff;
+      --success: #10b981;
+      --bg: #f9fafb;
+      --card: #ffffff;
+      --text: #1f2937;
+      --border: #e5e7eb;
+    }
+    * { box-sizing: border-box; }
+    body {
+      font-family: 'Inter', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      margin: 0;
+      padding: 1rem;
+      line-height: 1.6;
+    }
+    .container {
+      max-width: 640px;
+      margin: 2rem auto;
+      background: var(--card);
+      border-radius: 16px;
+      box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+      overflow: hidden;
+    }
+    header {
+      background: linear-gradient(135deg, #0066ff, #00c6ff);
+      color: white;
+      text-align: center;
+      padding: 2rem 1rem;
+    }
+    h1 { margin: 0; font-size: 1.8rem; font-weight: 700; }
+    .subtitle { margin: 0.5rem 0 0; font-size: 1rem; opacity: 0.9; }
+    form {
+      padding: 2rem;
+    }
+    .field {
+      margin-bottom: 1.5rem;
+    }
+    label {
+      display: block;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      font-size: 0.95rem;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.75rem 1rem;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      font-size: 1rem;
+      transition: all 0.2s;
+    }
+    input:focus, select:focus, textarea:focus {
+      outline: none;
+      border-color: var(--primary);
+      box-shadow: 0 0 0 3px rgba(0,102,255,0.1);
+    }
+    .rating-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .rating {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .rating input {
+      width: 60px;
+      padding: 0.5rem;
+      text-align: center;
+    }
+    .stars {
+      display: flex;
+      gap: 4px;
+    }
+    .star {
+      font-size: 1.4rem;
+      color: #ddd;
+      cursor: pointer;
+      transition: color 0.2s;
+    }
+    .star.filled { color: #fbbf24; }
+    .preview {
+      margin-top: 1rem;
+      text-align: center;
+    }
+    .preview img, .preview video {
+      max-width: 100%;
+      max-height: 300px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    button {
+      width: 100%;
+      padding: 1rem;
+      background: var(--primary);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    button:hover { background: #0052cc; }
+    button:disabled { background: #aaa; cursor: not-allowed; }
+    .msg {
+      margin: 1.5rem 2rem;
+      padding: 1rem;
+      border-radius: 8px;
+      text-align: center;
+      font-weight: 600;
+    }
+    .success { background: #d1fae5; color: #065f46; }
+    .error { background: #fee2e2; color: #991b1b; }
+    .progress {
+      height: 4px;
+      background: #e5e7eb;
+      border-radius: 2px;
+      overflow: hidden;
+      margin: 1rem 2rem;
+    }
+    .progress-bar {
+      height: 100%;
+      background: var(--success);
+      width: 0%;
+      transition: width 0.3s;
+    }
   </style>
 </head>
 <body>
 
-<h1>Fan Review</h1>
+<div class="container">
+  <header>
+    <h1>Fan Review</h1>
+    <p class="subtitle">Tell us about your live music experience</p>
+  </header>
 
-<form id="form">
-  <label>Your Name *</label>
-  <input type="text" name="fan_name" required>
+  <form id="form">
+    <div class="field">
+      <label>Your Name *</label>
+      <input type="text" name="fan_name" required>
+    </div>
 
-  <label>Show Attended *</label>
-  <input type="text" name="show_attended" required>
+    <div class="field">
+      <label>Show Attended *</label>
+      <input type="text" name="show_attended" required placeholder="e.g. Taylor Swift – The Eras Tour">
+    </div>
 
-  <label>Artist Reviewed *</label>
-  <input type="text" name="artist_reviewed" required>
+    <div class="field">
+      <label>Artist Reviewed *</label>
+      <input type="text" name="artist_reviewed" required placeholder="e.g. Taylor Swift">
+    </div>
 
-  <label>Date of Show *</label>
-  <input type="date" name="date" required>
+    <div class="field">
+      <label>Date of Show *</label>
+      <input type="date" name="date" required>
+    </div>
 
-  <fieldset>
-    <legend>Rate (1–5)</legend>
-    <label>Rating <input type="number" name="rating" min="1" max="5" required></label>
-    <label>Energy <input type="number" name="energy" min="1" max="5" required></label>
-    <label>Stage Presence <input type="number" name="stage_presence" min="1" max="5" required></label>
-    <label>Crowd Reaction <input type="number" name="crowd_reaction" min="1" max="5" required></label>
-    <label>Originality <input type="number" name="originality" min="1" max="5" required></label>
-    <label>Musicianship <input type="number" name="musicianship" min="1" max="5" required></label>
-  </fieldset>
+    <div class="field">
+      <label>Rate the Performance (1–5)</label>
+      <div class="rating-grid">
+        <div class="rating"><span>Rating</span><div class="stars" data-field="rating"></div></div>
+        <div class="rating"><span>Energy</span><div class="stars" data-field="energy"></div></div>
+        <div class="rating"><span>Stage Presence</span><div class="stars" data-field="stage_presence"></div></div>
+        <div class="rating"><span>Crowd Reaction</span><div class="stars" data-field="crowd_reaction"></div></div>
+        <div class="rating"><span>Originality</span><div class="stars" data-field="originality"></div></div>
+        <div class="rating"><span>Musicianship</span><div class="stars" data-field="musicianship"></div></div>
+      </div>
+      <input type="hidden" name="rating">
+      <input type="hidden" name="energy">
+      <input type="hidden" name="stage_presence">
+      <input type="hidden" name="crowd_reaction">
+      <input type="hidden" name="originality">
+      <input type="hidden" name="musicianship">
+    </div>
 
-  <label>Standout Moment</label>
-  <textarea name="standout_moment" rows="2"></textarea>
+    <div class="field">
+      <label>Standout Moment</label>
+      <textarea name="standout_moment" rows="2" placeholder="The guitar solo was insane!"></textarea>
+    </div>
 
-  <label>Live Presence</label>
-  <textarea name="live_presence" rows="2"></textarea>
+    <div class="field">
+      <label>Live Presence</label>
+      <textarea name="live_presence" rows="2" placeholder="How did the artist connect with the crowd?"></textarea>
+    </div>
 
-  <label>Recommend Artist?</label>
-  <select name="recommend_artist">
-    <option value="Yes">Yes</option>
-    <option value="No">No</option>
-  </select>
+    <div class="field">
+      <label>Would You Recommend This Artist Live?</label>
+      <select name="recommend_artist">
+        <option value="Yes">Hell Yes!</option>
+        <option value="No">Not Really</option>
+      </select>
+    </div>
 
-  <label>How Did You Discover?</label>
-  <select name="discovery_source">
-    <option value="Social Media">Social Media</option>
-    <option value="Friend">Friend</option>
-    <option value="Radio">Radio</option>
-    <option value="Other">Other</option>
-  </select>
+    <div class="field">
+      <label>How Did You Discover This Artist?</label>
+      <select name="discovery_source">
+        <option value="Social Media">Social Media</option>
+        <option value="Friend">Friend / Word of Mouth</option>
+        <option value="Radio">Radio / Playlist</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
 
-  <label>Review Weight (1–10)</label>
-  <input type="number" name="review_weight" min="1" max="10">
+    <div class="field">
+      <label>Review Influence (1–10)</label>
+      <input type="number" name="review_weight" min="1" max="10" value="5">
+    </div>
 
-  <label>Upload Photo/Video</label>
-  <input type="file" id="file" name="media_upload" accept="image/*,video/*">
-  <div class="preview" id="preview"></div>
+    <div class="field">
+      <label>Upload Photo/Video (optional)</label>
+      <input type="file" id="file" name="media_upload" accept="image/*,video/*">
+      <div class="preview" id="preview"></div>
+    </div>
 
-  <button type="submit" id="btn">Submit Review</button>
-</form>
+    <button type="submit" id="btn">Submit Review</button>
+  </form>
 
-<div id="msg" class="msg"></div>
+  <div class="progress"><div class="progress-bar" id="progress"></div></div>
+  <div id="msg" class="msg"></div>
+</div>
 
 <script type="module">
   const SUPABASE_URL = 'https://qwickgmrhqdnqaqxuuwk.supabase.co';
@@ -89,73 +244,99 @@
   const msg = document.getElementById('msg');
   const preview = document.getElementById('preview');
   const btn = document.getElementById('btn');
+  const progress = document.getElementById('progress');
 
+  // Star Rating System
+  document.querySelectorAll('.stars').forEach(container => {
+    const field = container.dataset.field;
+    let rating = 0;
+    for (let i = 1; i <= 5; i++) {
+      const star = document.createElement('span');
+      star.className = 'star';
+      star.innerHTML = '★';
+      star.onclick = () => {
+        rating = i;
+        document.querySelector(`input[name="${field}"]`).value = i;
+        container.querySelectorAll('.star').forEach((s, idx) => {
+          s.classList.toggle('filled', idx < i);
+        });
+      };
+      container.appendChild(star);
+    }
+  });
+
+  // File Preview
   document.getElementById('file').onchange = e => {
     const file = e.target.files[0];
     preview.innerHTML = '';
     if (file) {
       const url = URL.createObjectURL(file);
-      preview.innerHTML = file.type.startsWith('image/') 
-        ? `<img src="${url}">` 
-        : `<video src="${url}" controls></video>`;
+      if (file.type.startsWith('image/')) {
+        preview.innerHTML = `<img src="${url}">`;
+      } else if (file.type.startsWith('video/')) {
+        preview.innerHTML = `<video src="${url}" controls></video>`;
+      }
     }
   };
 
+  // Submit
   document.getElementById('form').onsubmit = async e => {
     e.preventDefault();
     btn.disabled = true;
-    msg.textContent = 'Submitting...';
-    msg.className = 'msg';
+    msg.textContent = '';
+    progress.style.width = '0%';
 
     const form = new FormData(e.target);
+    const review_id = `rev_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
     const now = new Date().toISOString();
 
-    // GENERATE UNIQUE review_id
-    const review_id = `rev_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`;
-
     const data = {
-      review_id: review_id,
+      review_id,
       fan_name: form.get('fan_name'),
       show_attended: form.get('show_attended'),
       artist_reviewed: form.get('artist_reviewed'),
       date: form.get('date'),
-      rating: parseInt(form.get('rating')),
-      energy: parseInt(form.get('energy')),
-      stage_presence: parseInt(form.get('stage_presence')),
-      crowd_reaction: parseInt(form.get('crowd_reaction')),
-      originality: parseInt(form.get('originality')),
-      musicianship: parseInt(form.get('musicianship')),
+      rating: parseInt(form.get('rating')) || 0,
+      energy: parseInt(form.get('energy')) || 0,
+      stage_presence: parseInt(form.get('stage_presence')) || 0,
+      crowd_reaction: parseInt(form.get('crowd_reaction')) || 0,
+      originality: parseInt(form.get('originality')) || 0,
+      musicianship: parseInt(form.get('musicianship')) || 0,
       standout_moment: form.get('standout_moment'),
       live_presence: form.get('live_presence'),
       recommend_artist: form.get('recommend_artist'),
       discovery_source: form.get('discovery_source'),
-      review_weight: form.get('review_weight') ? parseInt(form.get('review_weight')) : null,
+      review_weight: parseInt(form.get('review_weight')) || 5,
       created_time: now,
       hours_since: 0,
       has_media: false
     };
 
-    // Upload media
+    // Upload with progress
     const file = form.get('media_upload');
     if (file && file.size > 0) {
       const ext = file.name.split('.').pop();
       const path = `reviews/${review_id}.${ext}`;
-      const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true });
-      if (upErr && upErr.message !== 'The resource already exists') {
-        msg.textContent = 'Upload failed: ' + upErr.message;
+      const { error: upErr } = await supabase.storage
+        .from(BUCKET)
+        .upload(path, file, { upsert: true });
+      if (upErr && !upErr.message.includes('already exists')) {
+        msg.textContent = 'Upload failed';
         msg.className = 'msg error';
         btn.disabled = false;
         return;
       }
       const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
-      data['media_upload'] = urlData.publicUrl;
-      data['has_media'] = true;
+      data.media_upload = urlData.publicUrl;
+      data.has_media = true;
+      progress.style.width = '70%';
+    } else {
+      progress.style.width = '50%';
     }
 
-    // INSERT WITH UPSERT TO PREVENT DUPLICATES
-    const { error } = await supabase
-      .from(TABLE)
-      .upsert([data], { onConflict: 'review_id' });
+    // Save
+    const { error } = await supabase.from(TABLE).upsert([data], { onConflict: 'review_id' });
+    progress.style.width = '100%';
 
     if (error) {
       msg.textContent = 'Error: ' + error.message;
@@ -165,8 +346,11 @@
       msg.className = 'msg success';
       e.target.reset();
       preview.innerHTML = '';
+      document.querySelectorAll('.stars').forEach(c => c.innerHTML = '');
+      setTimeout(() => location.reload(), 1500);
     }
     btn.disabled = false;
+    setTimeout(() => progress.style.width = '0%', 1000);
   };
 </script>
 </body>
