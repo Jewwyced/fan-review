@@ -24,55 +24,52 @@
 
 <form id="form">
   <label>Your Name *</label>
-  <input type="text" name="fan name" required>
+  <input type="text" name="fan_name" required>
 
   <label>Show Attended *</label>
-  <input type="text" name="show attended" required placeholder="e.g. Taylor Swift – The Eras Tour">
+  <input type="text" name="show_attended" required>
 
   <label>Artist Reviewed *</label>
-  <input type="text" name="artist reviewed" required placeholder="e.g. Taylor Swift">
+  <input type="text" name="artist_reviewed" required>
 
   <label>Date of Show *</label>
   <input type="date" name="date" required>
 
   <fieldset>
-    <legend>Rate (1 = low, 5 = high)</legend>
+    <legend>Rate (1–5)</legend>
     <label>Rating <input type="number" name="rating" min="1" max="5" required></label>
     <label>Energy <input type="number" name="energy" min="1" max="5" required></label>
-    <label>Stage Presence <input type="number" name="stage presence" min="1" max="5" required></label>
-    <label>Crowd Reaction <input type="number" name="crowd reaction" min="1" max="5" required></label>
+    <label>Stage Presence <input type="number" name="stage_presence" min="1" max="5" required></label>
+    <label>Crowd Reaction <input type="number" name="crowd_reaction" min="1" max="5" required></label>
     <label>Originality <input type="number" name="originality" min="1" max="5" required></label>
     <label>Musicianship <input type="number" name="musicianship" min="1" max="5" required></label>
   </fieldset>
 
   <label>Standout Moment</label>
-  <textarea name="standout moment" rows="2"></textarea>
+  <textarea name="standout_moment" rows="2"></textarea>
 
   <label>Live Presence</label>
-  <textarea name="live presence" rows="2"></textarea>
+  <textarea name="live_presence" rows="2"></textarea>
 
   <label>Recommend Artist?</label>
-  <select name="recommend artist">
+  <select name="recommend_artist">
     <option value="Yes">Yes</option>
     <option value="No">No</option>
   </select>
 
   <label>How Did You Discover?</label>
-  <select name="discovery source">
+  <select name="discovery_source">
     <option value="Social Media">Social Media</option>
     <option value="Friend">Friend</option>
     <option value="Radio">Radio</option>
     <option value="Other">Other</option>
   </select>
 
-  <label>How Many Shows Have You Seen?</label>
-  <input type="number" name="show count" min="0">
+  <label>Review Weight (1–10)</label>
+  <input type="number" name="review_weight" min="1" max="10">
 
-  <label>Review Influence (1-10)</label>
-  <input type="number" name="review weight" min="1" max="10">
-
-  <label>Upload Photo/Video (optional)</label>
-  <input type="file" id="file" name="media upload" accept="image/*,video/*">
+  <label>Upload Photo/Video</label>
+  <input type="file" id="file" name="media_upload" accept="image/*,video/*">
   <div class="preview" id="preview"></div>
 
   <button type="submit" id="btn">Submit Review</button>
@@ -98,8 +95,9 @@
     preview.innerHTML = '';
     if (file) {
       const url = URL.createObjectURL(file);
-      if (file.type.startsWith('image/')) preview.innerHTML = `<img src="${url}">`;
-      if (file.type.startsWith('video/')) preview.innerHTML = `<video src="${url}" controls></video>`;
+      preview.innerHTML = file.type.startsWith('image/') 
+        ? `<img src="${url}">` 
+        : `<video src="${url}" controls></video>`;
     }
   };
 
@@ -111,13 +109,27 @@
 
     const form = new FormData(e.target);
     const data = {};
-    for (let [k, v] of form.entries()) {
-      if (k !== 'media upload') data[k] = v;
-    }
+
+    // EXACT COLUMN NAMES FROM YOUR SUPABASE
+    data['fan_name'] = form.get('fan_name');
+    data['show_attended'] = form.get('show_attended');
+    data['artist_reviewed'] = form.get('artist_reviewed');
+    data['date'] = form.get('date');
+    data['rating'] = form.get('rating');
+    data['energy'] = form.get('energy');
+    data['stage_presence'] = form.get('stage_presence');
+    data['crowd_reaction'] = form.get('crowd_reaction');
+    data['originality'] = form.get('originality');
+    data['musicianship'] = form.get('musicianship');
+    data['standout_moment'] = form.get('standout_moment');
+    data['live_presence'] = form.get('live_presence');
+    data['recommend_artist'] = form.get('recommend_artist');
+    data['discovery_source'] = form.get('discovery_source');
+    data['review_weight'] = form.get('review_weight');
 
     // Upload media
-    if (form.get('media upload')?.size > 0) {
-      const file = form.get('media upload');
+    const file = form.get('media_upload');
+    if (file && file.size > 0) {
       const ext = file.name.split('.').pop();
       const path = `reviews/${Date.now()}_${Math.random().toString(36).slice(2, 9)}.${ext}`;
       const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file);
@@ -128,10 +140,10 @@
         return;
       }
       const { data: urlData } = supabase.storage.from(BUCKET).getPublicUrl(path);
-      data['media upload'] = urlData.publicUrl;
+      data['media_upload'] = urlData.publicUrl;
     }
 
-    // Insert into fan_reviews
+    // INSERT
     const { error } = await supabase.from(TABLE).insert([data]);
 
     if (error) {
