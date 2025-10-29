@@ -293,19 +293,69 @@
   </header>
 
   <form id="form">
-    <div class="field">
-      <label>Your Name *</label>
-      <input type="text" name="fan_name" required>
-    </div>
-
+    <!-- 1. Artist Reviewed -->
     <div class="field">
       <label>Artist Reviewed *</label>
       <input type="text" name="artist_reviewed" required placeholder="e.g. Nourished By Time">
     </div>
 
+    <!-- 2. Show Attended -->
     <div class="field">
       <label>Show Attended *</label>
       <input type="text" name="show_attended" required placeholder="e.g. Nourished By Time @ Irving Plaza">
+    </div>
+
+    <!-- 3. Crowd Size -->
+    <div class="field">
+      <label>Crowd Size Estimate</label>
+      <input type="number" name="crowd_size_estimate" min="0" placeholder="e.g. 1000">
+    </div>
+
+    <!-- 4. STARS — USING ACTUAL Star EMOJI -->
+    <div class="field">
+      <label>Rate the Performance (1–5)</label>
+      <div class="rating-grid">
+        <div><span>Rating</span><div class="stars" data-field="rating"></div></div>
+        <div><span>Energy</span><div class="stars" data-field="energy"></div></div>
+        <div><span>Stage Presence</span><div class="stars" data-field="stage_presence"></div></div>
+        <div><span>Crowd Reaction</span><div class="stars" data-field="crowd_reaction"></div></div>
+        <div><span>Originality</span><div class="stars" data-field="originality"></div></div>
+        <div><span>Musicianship</span><div class="stars" data-field="musicianship"></div></div>
+      </div>
+      <input type="hidden" name="rating">
+      <input type="hidden" name="energy">
+      <input type="hidden" name="stage_presence">
+      <input type="hidden" name="crowd_reaction">
+      <input type="hidden" name="originality">
+      <input type="hidden" name="musicianship">
+    </div>
+
+    <!-- 5. Recommend — EMPTY -->
+    <div class="field">
+      <label>Would You Recommend This Artist Live?</label>
+      <select name="recommend_artist" required>
+        <option value="" disabled selected>Select...</option>
+        <option value="Yes">Hell Yes!</option>
+        <option value="No">Not Really</option>
+      </select>
+    </div>
+
+    <!-- 6. Discovery — EMPTY -->
+    <div class="field">
+      <label>How Did You Discover This Artist?</label>
+      <select name="discovery_source" required>
+        <option value="" disabled selected>Select...</option>
+        <option value="Social Media">Social Media</option>
+        <option value="Friend">Friend / Word of Mouth</option>
+        <option value="Radio">Radio / Playlist</option>
+        <option value="Other">Other</option>
+      </select>
+    </div>
+
+    <!-- OTHER FIELDS (unchanged) -->
+    <div class="field">
+      <label>Your Name *</label>
+      <input type="text" name="fan_name" required>
     </div>
 
     <div class="field">
@@ -325,29 +375,6 @@
     </div>
 
     <div class="field">
-      <label>Crowd Size Estimate</label>
-      <input type="number" name="crowd_size_estimate" min="0" placeholder="e.g. 1000">
-    </div>
-
-    <div class="field">
-      <label>Rate the Performance (1–5)</label>
-      <div class="rating-grid">
-        <div><span>Rating</span><div class="stars" data-field="rating"></div></div>
-        <div><span>Energy</span><div class="stars" data-field="energy"></div></div>
-        <div><span>Stage Presence</span><div class="stars" data-field="stage_presence"></div></div>
-        <div><span>Crowd Reaction</span><div class="stars" data-field="crowd_reaction"></div></div>
-        <div><span>Originality</span><div class="stars" data-field="originality"></div></div>
-        <div><span>Musicianship</span><div class="stars" data-field="musicianship"></div></div>
-      </div>
-      <input type="hidden" name="rating">
-      <input type="hidden" name="energy">
-      <input type="hidden" name="stage_presence">
-      <input type="hidden" name="crowd_reaction">
-      <input type="hidden" name="originality">
-      <input type="hidden" name="musicianship">
-    </div>
-
-    <div class="field">
       <label>Standout Moment</label>
       <textarea name="standout_moment" rows="2" placeholder="That guitar solo was insane!"></textarea>
     </div>
@@ -355,26 +382,6 @@
     <div class="field">
       <label>Live Presence</label>
       <textarea name="live_presence" rows="2" placeholder="How did they connect with the crowd?"></textarea>
-    </div>
-
-    <div class="field">
-      <label>Would You Recommend This Artist Live?</label>
-      <select name="recommend_artist" required>
-        <option value="" disabled selected>Select...</option>
-        <option value="Yes">Hell Yes!</option>
-        <option value="No">Not Really</option>
-      </select>
-    </div>
-
-    <div class="field">
-      <label>How Did You Discover This Artist?</label>
-      <select name="discovery_source" required>
-        <option value="" disabled selected>Select...</option>
-        <option value="Social Media">Social Media</option>
-        <option value="Friend">Friend / Word of Mouth</option>
-        <option value="Radio">Radio / Playlist</option>
-        <option value="Other">Other</option>
-      </select>
     </div>
 
     <div class="field">
@@ -407,6 +414,8 @@
 </div>
 
 <script type="module">
+  // [ALL SUPABASE & JS LOGIC — UNCHANGED]
+
   const SUPABASE_URL = 'https://qwickgmrhqdnqaqxuuwk.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODA4OTEsImV4cCI6MjA3NTM1Njg5MX0.CxC1nH6Xvrggn_VNMmjuomeQQVdAfCwyPHJU81ZGjOM';
   const BUCKET = 'review-media';
@@ -422,21 +431,20 @@
   const livePreview = document.getElementById('livePreview');
   const themeToggle = document.getElementById('themeToggle');
 
-  // Theme Toggle
   themeToggle.onclick = () => {
     const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
     document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
     themeToggle.innerHTML = isDark ? 'Moon' : 'Sun';
   };
 
-  // Star Rating — REAL Star EMOJI (NO TEXT)
+  // Star EMOJI — USING ACTUAL Star (U+2B50)
   document.querySelectorAll('.stars').forEach(container => {
     const field = container.dataset.field;
     let rating = 0;
     for (let i = 1; i <= 5; i++) {
       const star = document.createElement('span');
       star.className = 'star';
-      star.textContent = 'Star';  // Star EMOJI
+      star.innerHTML = 'Star';  // Star EMOJI
       star.onclick = () => {
         rating = i;
         document.querySelector(`input[name="${field}"]`).value = i;
@@ -449,12 +457,11 @@
     }
   });
 
-  // Slider Value
+  // [REST OF JS — UNCHANGED]
   const weightInput = document.querySelector('input[name="review_weight"]');
   const weightValue = document.getElementById('weightValue');
   weightInput.oninput = () => weightValue.textContent = weightInput.value;
 
-  // Venue Search
   const venueInput = document.getElementById('venueSearch');
   const venueResults = document.getElementById('venueResults');
   venueInput.addEventListener('input', async () => {
@@ -479,7 +486,6 @@
     if (!venueInput.contains(e.target) && !venueResults.contains(e.target)) venueResults.style.display = 'none';
   });
 
-  // File Preview
   document.getElementById('file').onchange = e => {
     const file = e.target.files[0];
     preview.innerHTML = '';
@@ -491,7 +497,6 @@
     }
   };
 
-  // Live Preview
   function updateLivePreview() {
     const artist = document.querySelector('input[name="artist_reviewed"]').value;
     const show = document.querySelector('input[name="show_attended"]').value;
@@ -509,7 +514,6 @@
   }
   document.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('input', updateLivePreview));
 
-  // Submit
   document.getElementById('form').onsubmit = async e => {
     e.preventDefault();
     btn.disabled = true;
