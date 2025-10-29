@@ -186,7 +186,6 @@
       <input type="text" name="fan_name" required>
     </div>
 
-    <!-- ORIGINAL ORDER: SHOW FIRST -->
     <div class="field">
       <label>Show Attended *</label>
       <input type="text" name="show_attended" required placeholder="e.g. Nourished By Time @ Irving Plaza">
@@ -207,7 +206,6 @@
       <input type="number" name="crowd_size_estimate" min="0" placeholder="e.g. 1000">
     </div>
 
-    <!-- ORIGINAL STAR SYSTEM — WORKING 100% -->
     <div class="field">
       <label>Rate the Performance (1–5)</label>
       <div class="rating-grid">
@@ -236,7 +234,6 @@
       <textarea name="live_presence" rows="2" placeholder="How did they connect with the crowd?"></textarea>
     </div>
 
-    <!-- EMPTY ON LOAD -->
     <div class="field">
       <label>Would You Recommend This Artist Live?</label>
       <select name="recommend_artist" required>
@@ -289,14 +286,14 @@
   const btn = document.getElementById('btn');
   const progress = document.getElementById('progress');
 
-  // ORIGINAL STAR SYSTEM — WORKS EVERYWHERE
+  // Star rating system with emoji stars
   document.querySelectorAll('.stars').forEach(container => {
     const field = container.dataset.field;
     let rating = 0;
     for (let i = 1; i <= 5; i++) {
       const star = document.createElement('span');
       star.className = 'star';
-      star.innerHTML = 'Star';  // Star — GUARANTEED
+      star.innerHTML = '⭐';
       star.onclick = () => {
         rating = i;
         document.querySelector(`input[name="${field}"]`).value = i;
@@ -382,7 +379,7 @@
     } else {
       msg.innerHTML = `
         Review saved! Thank you!<br>
-        <a href="https://twitter.com/intent/tweet?text=I just reviewed ${data.artist_reviewed} on Fan Review! Star&url=https://jewwyced.github.io/fan-review/" 
+        <a href="https://twitter.com/intent/tweet?text=I just reviewed ${data.artist_reviewed} on Fan Review! ⭐&url=https://jewwyced.github.io/fan-review/" 
            target="_blank" style="margin-top:1rem;display:inline-block;background:#16a34a;color:white;padding:0.8rem 2rem;border-radius:12px;text-decoration:none;font-weight:700;">
           Share on X
         </a>
