@@ -18,15 +18,6 @@
       --border: #fb923c;
       --shadow: 0 10px 30px rgba(124, 45, 18, 0.2);
     }
-    [data-theme="dark"] {
-      --bg: #1c1917;
-      --card: #2c1810;
-      --text: #fed7aa;
-      --border: #92400e;
-      --shadow: 0 10px 30px rgba(0,0,0,0.5);
-      --primary: #fb923c;
-      --primary-dark: #ea580c;
-    }
     * { box-sizing: border-box; margin:0; padding:0; }
     body {
       font-family: 'Inter', sans-serif;
@@ -49,26 +40,9 @@
       color: white;
       text-align: center;
       padding: 3rem 1.5rem;
-      position: relative;
     }
     h1 { margin: 0; font-size: 2.5rem; font-weight: 800; }
     .subtitle { margin: 0.7rem 0 0; font-size: 1.2rem; opacity: 0.95; }
-    .theme-toggle {
-      position: absolute;
-      top: 1.2rem;
-      right: 1.2rem;
-      background: rgba(255,255,255,0.3);
-      border: none;
-      color: white;
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 1.4rem;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
     form {
       padding: 3rem;
       background: var(--card);
@@ -196,91 +170,6 @@
       width: 0%;
       transition: width 0.4s ease;
     }
-    .live-preview {
-      margin: 3rem 2.5rem 2rem;
-      padding: 2rem;
-      background: linear-gradient(135deg, rgba(251, 146, 60, 0.15), rgba(234, 88, 12, 0.1));
-      border-radius: 24px;
-      border: 3px dashed var(--primary);
-      display: none;
-    }
-    .live-preview h3 { 
-      margin-bottom: 1.5rem; 
-      color: var(--primary); 
-      font-size: 1.5rem;
-      text-align: center;
-      font-weight: 800;
-    }
-    .live-preview p { 
-      margin: 0.8rem 0; 
-      font-size: 1.1rem; 
-      font-weight: 600;
-    }
-    .share-btn {
-      margin-top: 1.5rem;
-      background: #16a34a;
-      color: white;
-      padding: 1rem 2.5rem;
-      border-radius: 14px;
-      text-decoration: none;
-      display: inline-block;
-      font-weight: 700;
-      font-size: 1.1rem;
-      box-shadow: 0 6px 15px rgba(22, 163, 74, 0.4);
-    }
-    .venue-results {
-      max-height: 240px;
-      overflow-y: auto;
-      margin-top: 12px;
-      border: 3px solid var(--border);
-      border-radius: 18px;
-      background: var(--bg);
-      display: none;
-      box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-    }
-    .venue-item {
-      padding: 16px 20px;
-      cursor: pointer;
-      border-bottom: 2px solid var(--border);
-      transition: all 0.2s;
-      font-weight: 600;
-      font-size: 1.1rem;
-    }
-    .venue-item:hover { 
-      background: rgba(251, 146, 60, 0.3); 
-      padding-left: 28px;
-    }
-    .venue-item:last-child { border-bottom: none; }
-    .slider-container {
-      display: flex;
-      align-items: center;
-      gap: 1.5rem;
-    }
-    .slider {
-      flex: 1;
-      height: 12px;
-      border-radius: 6px;
-      background: var(--border);
-      outline: none;
-      -webkit-appearance: none;
-    }
-    .slider::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 32px;
-      height: 32px;
-      border-radius: 50%;
-      background: var(--primary);
-      cursor: pointer;
-      box-shadow: 0 5px 12px rgba(234, 88, 12, 0.5);
-      border: 4px solid white;
-    }
-    .slider-value {
-      min-width: 60px;
-      text-align: center;
-      font-weight: 800;
-      font-size: 1.5rem;
-      color: var(--accent);
-    }
   </style>
 </head>
 <body>
@@ -289,29 +178,36 @@
   <header>
     <h1>Fan Review</h1>
     <p class="subtitle">Your voice shapes the live music scene</p>
-    <button class="theme-toggle" id="themeToggle">Moon</button>
   </header>
 
   <form id="form">
-    <!-- 1. Artist Reviewed -->
     <div class="field">
-      <label>Artist Reviewed *</label>
-      <input type="text" name="artist_reviewed" required placeholder="e.g. Nourished By Time">
+      <label>Your Name *</label>
+      <input type="text" name="fan_name" required>
     </div>
 
-    <!-- 2. Show Attended -->
+    <!-- ORIGINAL ORDER: SHOW FIRST -->
     <div class="field">
       <label>Show Attended *</label>
       <input type="text" name="show_attended" required placeholder="e.g. Nourished By Time @ Irving Plaza">
     </div>
 
-    <!-- 3. Crowd Size -->
+    <div class="field">
+      <label>Artist Reviewed *</label>
+      <input type="text" name="artist_reviewed" required placeholder="e.g. Nourished By Time">
+    </div>
+
+    <div class="field">
+      <label>Date of Show *</label>
+      <input type="date" name="date" required>
+    </div>
+
     <div class="field">
       <label>Crowd Size Estimate</label>
       <input type="number" name="crowd_size_estimate" min="0" placeholder="e.g. 1000">
     </div>
 
-    <!-- 4. STARS — USING ACTUAL Star EMOJI -->
+    <!-- ORIGINAL STAR SYSTEM — WORKING 100% -->
     <div class="field">
       <label>Rate the Performance (1–5)</label>
       <div class="rating-grid">
@@ -330,7 +226,17 @@
       <input type="hidden" name="musicianship">
     </div>
 
-    <!-- 5. Recommend — EMPTY -->
+    <div class="field">
+      <label>Standout Moment</label>
+      <textarea name="standout_moment" rows="2" placeholder="That guitar solo was insane!"></textarea>
+    </div>
+
+    <div class="field">
+      <label>Live Presence</label>
+      <textarea name="live_presence" rows="2" placeholder="How did they connect with the crowd?"></textarea>
+    </div>
+
+    <!-- EMPTY ON LOAD -->
     <div class="field">
       <label>Would You Recommend This Artist Live?</label>
       <select name="recommend_artist" required>
@@ -340,7 +246,6 @@
       </select>
     </div>
 
-    <!-- 6. Discovery — EMPTY -->
     <div class="field">
       <label>How Did You Discover This Artist?</label>
       <select name="discovery_source" required>
@@ -352,48 +257,13 @@
       </select>
     </div>
 
-    <!-- OTHER FIELDS (unchanged) -->
     <div class="field">
-      <label>Your Name *</label>
-      <input type="text" name="fan_name" required>
+      <label>Review Influence (1–10)</label>
+      <input type="number" name="review_weight" min="1" max="10" value="5">
     </div>
 
     <div class="field">
-      <label>Venue Name *</label>
-      <input type="text" name="venue_name" id="venueSearch" required placeholder="Search venue...">
-      <div id="venueResults" class="venue-results"></div>
-    </div>
-
-    <div class="field">
-      <label>Date of Show *</label>
-      <input type="date" name="date" required>
-    </div>
-
-    <div class="field">
-      <label>How Many Times Have You Seen This Artist?</label>
-      <input type="number" name="show_count" min="1" value="1">
-    </div>
-
-    <div class="field">
-      <label>Standout Moment</label>
-      <textarea name="standout_moment" rows="2" placeholder="That guitar solo was insane!"></textarea>
-    </div>
-
-    <div class="field">
-      <label>Live Presence</label>
-      <textarea name="live_presence" rows="2" placeholder="How did they connect with the crowd?"></textarea>
-    </div>
-
-    <div class="field">
-      <label>Review Influence</label>
-      <div class="slider-container">
-        <input type="range" class="slider" name="review_weight" min="1" max="10" value="5">
-        <div class="slider-value"><span id="weightValue">5</span>/10</div>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Upload Photo/Video</label>
+      <label>Upload Photo/Video (optional)</label>
       <input type="file" id="file" name="media_upload" accept="image/*,video/*">
       <div class="preview" id="preview"></div>
     </div>
@@ -403,19 +273,9 @@
 
   <div class="progress"><div class="progress-bar" id="progress"></div></div>
   <div id="msg" class="msg"></div>
-
-  <div class="live-preview" id="livePreview">
-    <h3>Live Preview</h3>
-    <p><strong>Artist:</strong> <span id="prevArtist"></span></p>
-    <p><strong>Show:</strong> <span id="prevShow"></span></p>
-    <p><strong>Venue:</strong> <span id="prevVenue"></span></p>
-    <p><strong>Rating:</strong> <span id="prevRating"></span> stars</p>
-  </div>
 </div>
 
 <script type="module">
-  // [ALL SUPABASE & JS LOGIC — UNCHANGED]
-
   const SUPABASE_URL = 'https://qwickgmrhqdnqaqxuuwk.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODA4OTEsImV4cCI6MjA3NTM1Njg5MX0.CxC1nH6Xvrggn_VNMmjuomeQQVdAfCwyPHJU81ZGjOM';
   const BUCKET = 'review-media';
@@ -428,64 +288,27 @@
   const preview = document.getElementById('preview');
   const btn = document.getElementById('btn');
   const progress = document.getElementById('progress');
-  const livePreview = document.getElementById('livePreview');
-  const themeToggle = document.getElementById('themeToggle');
 
-  themeToggle.onclick = () => {
-    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
-    document.documentElement.setAttribute('data-theme', isDark ? 'light' : 'dark');
-    themeToggle.innerHTML = isDark ? 'Moon' : 'Sun';
-  };
-
-  // Star EMOJI — USING ACTUAL Star (U+2B50)
+  // ORIGINAL STAR SYSTEM — WORKS EVERYWHERE
   document.querySelectorAll('.stars').forEach(container => {
     const field = container.dataset.field;
     let rating = 0;
     for (let i = 1; i <= 5; i++) {
       const star = document.createElement('span');
       star.className = 'star';
-      star.innerHTML = 'Star';  // Star EMOJI
+      star.innerHTML = 'Star';  // Star — GUARANTEED
       star.onclick = () => {
         rating = i;
         document.querySelector(`input[name="${field}"]`).value = i;
         container.querySelectorAll('.star').forEach((s, idx) => {
           s.classList.toggle('filled', idx < i);
         });
-        updateLivePreview();
       };
       container.appendChild(star);
     }
   });
 
-  // [REST OF JS — UNCHANGED]
-  const weightInput = document.querySelector('input[name="review_weight"]');
-  const weightValue = document.getElementById('weightValue');
-  weightInput.oninput = () => weightValue.textContent = weightInput.value;
-
-  const venueInput = document.getElementById('venueSearch');
-  const venueResults = document.getElementById('venueResults');
-  venueInput.addEventListener('input', async () => {
-    const query = venueInput.value.trim();
-    if (query.length < 2) { venueResults.style.display = 'none'; return; }
-    const { data } = await supabase.from('Venues').select('Venue Name, City').ilike('Venue Name', `%${query}%`).limit(5);
-    venueResults.innerHTML = '';
-    if (data?.length) {
-      data.forEach(v => {
-        const div = document.createElement('div');
-        div.className = 'venue-item';
-        div.textContent = `${v['Venue Name']} – ${v.City}`;
-        div.onclick = () => { venueInput.value = v['Venue Name']; venueResults.style.display = 'none'; updateLivePreview(); };
-        venueResults.appendChild(div);
-      });
-      venueResults.style.display = 'block';
-    } else {
-      venueResults.style.display = 'none';
-    }
-  });
-  document.addEventListener('click', e => {
-    if (!venueInput.contains(e.target) && !venueResults.contains(e.target)) venueResults.style.display = 'none';
-  });
-
+  // File Preview
   document.getElementById('file').onchange = e => {
     const file = e.target.files[0];
     preview.innerHTML = '';
@@ -497,23 +320,7 @@
     }
   };
 
-  function updateLivePreview() {
-    const artist = document.querySelector('input[name="artist_reviewed"]').value;
-    const show = document.querySelector('input[name="show_attended"]').value;
-    const venue = document.querySelector('input[name="venue_name"]').value;
-    const rating = document.querySelector('input[name="rating"]').value;
-    if (artist || show || venue || rating) {
-      document.getElementById('prevArtist').textContent = artist || '—';
-      document.getElementById('prevShow').textContent = show || '—';
-      document.getElementById('prevVenue').textContent = venue || '—';
-      document.getElementById('prevRating').textContent = rating || '—';
-      livePreview.style.display = 'block';
-    } else {
-      livePreview.style.display = 'none';
-    }
-  }
-  document.querySelectorAll('input, textarea, select').forEach(el => el.addEventListener('input', updateLivePreview));
-
+  // Submit
   document.getElementById('form').onsubmit = async e => {
     e.preventDefault();
     btn.disabled = true;
@@ -527,11 +334,9 @@
     const data = {
       review_id,
       fan_name: form.get('fan_name'),
-      artist_reviewed: form.get('artist_reviewed'),
       show_attended: form.get('show_attended'),
-      venue_name: form.get('venue_name'),
+      artist_reviewed: form.get('artist_reviewed'),
       date: form.get('date'),
-      show_count: parseInt(form.get('show_count')) || 1,
       crowd_size_estimate: parseInt(form.get('crowd_size_estimate')) || null,
       rating: parseInt(form.get('rating')) || 0,
       energy: parseInt(form.get('energy')) || 0,
@@ -578,13 +383,14 @@
       msg.innerHTML = `
         Review saved! Thank you!<br>
         <a href="https://twitter.com/intent/tweet?text=I just reviewed ${data.artist_reviewed} on Fan Review! Star&url=https://jewwyced.github.io/fan-review/" 
-           target="_blank" class="share-btn">Share on X</a>
+           target="_blank" style="margin-top:1rem;display:inline-block;background:#16a34a;color:white;padding:0.8rem 2rem;border-radius:12px;text-decoration:none;font-weight:700;">
+          Share on X
+        </a>
       `;
       msg.className = 'msg success';
       confetti({ particleCount: 200, spread: 100, colors: ['#ea580c', '#fb923c', '#7c2d12'], origin: { y: 0.6 } });
       e.target.reset();
       preview.innerHTML = '';
-      livePreview.style.display = 'none';
       document.querySelectorAll('.stars').forEach(c => c.innerHTML = '');
       setTimeout(() => location.reload(), 3000);
     }
