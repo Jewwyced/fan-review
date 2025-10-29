@@ -79,24 +79,71 @@
     .rating-grid {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 1.5rem;
+      gap: 2rem;
     }
-    .stars {
+    .rating-item {
+      background: var(--bg);
+      padding: 1.5rem;
+      border-radius: 18px;
+      border: 3px solid var(--border);
+    }
+    .rating-label {
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--accent);
+      margin-bottom: 0.8rem;
+      display: block;
+    }
+    .slider-container {
       display: flex;
-      gap: 10px;
-      justify-content: center;
+      align-items: center;
+      gap: 1rem;
     }
-    .star {
-      font-size: 2.5rem;
+    .slider {
+      flex: 1;
+      -webkit-appearance: none;
+      appearance: none;
+      height: 8px;
+      border-radius: 10px;
+      background: linear-gradient(to right, #ddd6c2 0%, #ddd6c2 100%);
+      outline: none;
+      transition: all 0.3s;
+    }
+    .slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary);
       cursor: pointer;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
       transition: all 0.2s;
-      user-select: none;
-      color: #ddd6c2;
     }
-    .star:hover { transform: scale(1.3); }
-    .star.filled { 
-      color: #ea580c; 
-      text-shadow: 0 0 12px #fb923c, 0 0 20px #fb923c;
+    .slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.6);
+    }
+    .slider::-moz-range-thumb {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--primary);
+      cursor: pointer;
+      border: none;
+      box-shadow: 0 2px 8px rgba(234, 88, 12, 0.4);
+      transition: all 0.2s;
+    }
+    .slider::-moz-range-thumb:hover {
+      transform: scale(1.2);
+      box-shadow: 0 4px 12px rgba(234, 88, 12, 0.6);
+    }
+    .rating-value {
+      font-weight: 800;
+      font-size: 1.5rem;
+      color: var(--primary);
+      min-width: 35px;
+      text-align: center;
     }
     .preview {
       margin-top: 1.5rem;
@@ -146,7 +193,9 @@
       font-weight: 700;
       font-size: 1.2rem;
       border: 3px solid;
+      display: none;
     }
+    .msg.show { display: block; }
     .success { 
       background: #fed7aa; 
       color: #7c2d12; 
@@ -207,21 +256,56 @@
     </div>
 
     <div class="field">
-      <label>Rate the Performance (1–5)</label>
+      <label>Rate the Performance (1–10)</label>
       <div class="rating-grid">
-        <div><span>Rating</span><div class="stars" data-field="rating"></div></div>
-        <div><span>Energy</span><div class="stars" data-field="energy"></div></div>
-        <div><span>Stage Presence</span><div class="stars" data-field="stage_presence"></div></div>
-        <div><span>Crowd Reaction</span><div class="stars" data-field="crowd_reaction"></div></div>
-        <div><span>Originality</span><div class="stars" data-field="originality"></div></div>
-        <div><span>Musicianship</span><div class="stars" data-field="musicianship"></div></div>
+        <div class="rating-item">
+          <span class="rating-label">Overall Rating</span>
+          <div class="slider-container">
+            <input type="range" class="slider" name="rating" min="1" max="10" value="5" data-display="rating-display">
+            <span class="rating-value" id="rating-display">5</span>
+          </div>
+        </div>
+        
+        <div class="rating-item">
+          <span class="rating-label">Energy</span>
+          <div class="slider-container">
+            <input type="range" class="slider" name="energy" min="1" max="10" value="5" data-display="energy-display">
+            <span class="rating-value" id="energy-display">5</span>
+          </div>
+        </div>
+        
+        <div class="rating-item">
+          <span class="rating-label">Stage Presence</span>
+          <div class="slider-container">
+            <input type="range" class="slider" name="stage_presence" min="1" max="10" value="5" data-display="stage-display">
+            <span class="rating-value" id="stage-display">5</span>
+          </div>
+        </div>
+        
+        <div class="rating-item">
+          <span class="rating-label">Crowd Reaction</span>
+          <div class="slider-container">
+            <input type="range" class="slider" name="crowd_reaction" min="1" max="10" value="5" data-display="crowd-display">
+            <span class="rating-value" id="crowd-display">5</span>
+          </div>
+        </div>
+        
+        <div class="rating-item">
+          <span class="rating-label">Originality</span>
+          <div class="slider-container">
+            <input type="range" class="slider" name="originality" min="1" max="10" value="5" data-display="original-display">
+            <span class="rating-value" id="original-display">5</span>
+          </div>
+        </div>
+        
+        <div class="rating-item">
+          <span class="rating-label">Musicianship</span>
+          <div class="slider-container">
+            <input type="range" class="slider" name="musicianship" min="1" max="10" value="5" data-display="music-display">
+            <span class="rating-value" id="music-display">5</span>
+          </div>
+        </div>
       </div>
-      <input type="hidden" name="rating">
-      <input type="hidden" name="energy">
-      <input type="hidden" name="stage_presence">
-      <input type="hidden" name="crowd_reaction">
-      <input type="hidden" name="originality">
-      <input type="hidden" name="musicianship">
     </div>
 
     <div class="field">
@@ -286,23 +370,20 @@
   const btn = document.getElementById('btn');
   const progress = document.getElementById('progress');
 
-  // Star rating system with emoji stars
-  document.querySelectorAll('.stars').forEach(container => {
-    const field = container.dataset.field;
-    let rating = 0;
-    for (let i = 1; i <= 5; i++) {
-      const star = document.createElement('span');
-      star.className = 'star';
-      star.innerHTML = '⭐';
-      star.onclick = () => {
-        rating = i;
-        document.querySelector(`input[name="${field}"]`).value = i;
-        container.querySelectorAll('.star').forEach((s, idx) => {
-          s.classList.toggle('filled', idx < i);
-        });
-      };
-      container.appendChild(star);
-    }
+  // Slider updates with gradient fill
+  document.querySelectorAll('.slider').forEach(slider => {
+    const displayId = slider.dataset.display;
+    const display = document.getElementById(displayId);
+    
+    const updateSlider = () => {
+      const value = slider.value;
+      display.textContent = value;
+      const percent = ((value - 1) / 9) * 100;
+      slider.style.background = `linear-gradient(to right, #ea580c ${percent}%, #ddd6c2 ${percent}%)`;
+    };
+    
+    slider.addEventListener('input', updateSlider);
+    updateSlider();
   });
 
   // File Preview
@@ -322,6 +403,7 @@
     e.preventDefault();
     btn.disabled = true;
     msg.textContent = '';
+    msg.classList.remove('show');
     progress.style.width = '0%';
 
     const form = new FormData(e.target);
@@ -335,12 +417,12 @@
       artist_reviewed: form.get('artist_reviewed'),
       date: form.get('date'),
       crowd_size_estimate: parseInt(form.get('crowd_size_estimate')) || null,
-      rating: parseInt(form.get('rating')) || 0,
-      energy: parseInt(form.get('energy')) || 0,
-      stage_presence: parseInt(form.get('stage_presence')) || 0,
-      crowd_reaction: parseInt(form.get('crowd_reaction')) || 0,
-      originality: parseInt(form.get('originality')) || 0,
-      musicianship: parseInt(form.get('musicianship')) || 0,
+      rating: parseInt(form.get('rating')) || 5,
+      energy: parseInt(form.get('energy')) || 5,
+      stage_presence: parseInt(form.get('stage_presence')) || 5,
+      crowd_reaction: parseInt(form.get('crowd_reaction')) || 5,
+      originality: parseInt(form.get('originality')) || 5,
+      musicianship: parseInt(form.get('musicianship')) || 5,
       standout_moment: form.get('standout_moment'),
       live_presence: form.get('live_presence'),
       recommend_artist: form.get('recommend_artist'),
@@ -358,7 +440,7 @@
       const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file, { upsert: true });
       if (upErr && !upErr.message.includes('already exists')) {
         msg.textContent = 'Upload failed';
-        msg.className = 'msg error';
+        msg.className = 'msg error show';
         btn.disabled = false;
         return;
       }
@@ -375,20 +457,25 @@
 
     if (error) {
       msg.textContent = 'Error: ' + error.message;
-      msg.className = 'msg error';
+      msg.className = 'msg error show';
     } else {
       msg.innerHTML = `
         Review saved! Thank you!<br>
-        <a href="https://twitter.com/intent/tweet?text=I just reviewed ${data.artist_reviewed} on Fan Review! ⭐&url=https://jewwyced.github.io/fan-review/" 
+        <a href="https://twitter.com/intent/tweet?text=I just reviewed ${data.artist_reviewed} on Fan Review!&url=https://jewwyced.github.io/fan-review/" 
            target="_blank" style="margin-top:1rem;display:inline-block;background:#16a34a;color:white;padding:0.8rem 2rem;border-radius:12px;text-decoration:none;font-weight:700;">
           Share on X
         </a>
       `;
-      msg.className = 'msg success';
+      msg.className = 'msg success show';
       confetti({ particleCount: 200, spread: 100, colors: ['#ea580c', '#fb923c', '#7c2d12'], origin: { y: 0.6 } });
       e.target.reset();
       preview.innerHTML = '';
-      document.querySelectorAll('.stars').forEach(c => c.innerHTML = '');
+      document.querySelectorAll('.slider').forEach(slider => {
+        slider.value = 5;
+        const displayId = slider.dataset.display;
+        document.getElementById(displayId).textContent = '5';
+        slider.style.background = `linear-gradient(to right, #ea580c 44.44%, #ddd6c2 44.44%)`;
+      });
       setTimeout(() => location.reload(), 3000);
     }
     btn.disabled = false;
