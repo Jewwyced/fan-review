@@ -4,17 +4,15 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Fan Dashboard - Pulse A&R</title>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
   <style>
     * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
       background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
       color: #fff;
       min-height: 100vh;
     }
-
     .header {
       background: rgba(0, 0, 0, 0.3);
       padding: 20px 40px;
@@ -44,7 +42,6 @@
       cursor: pointer;
     }
     .logout-btn:hover { background: rgba(255,255,255,0.2); }
-
     .container { display: flex; max-width: 1400px; margin: 0 auto; padding: 40px; gap: 30px; }
     .sidebar {
       width: 250px;
@@ -97,8 +94,9 @@
       transition: all 0.3s;
     }
     .action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,140,66,0.4); }
+    .action-btn.secondary { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); }
 
-    /* FAN REVIEW FORM — CLEAN & ANIMATED */
+    /* FORM STYLES */
     .field { margin-bottom: 2rem; opacity: 0; animation: fadeInUp 0.6s ease forwards; }
     .field:nth-child(1) { animation-delay: 0.05s; }
     .field:nth-child(2) { animation-delay: 0.1s; }
@@ -280,7 +278,7 @@
   </div>
 
   <div class="container">
-    <!-- SIDEBAR WITH 6 ITEMS -->
+    <!-- SIDEBAR WITH EMOJIS -->
     <div class="sidebar">
       <div class="nav-item active" onclick="showSection('dashboard')"><span>Dashboard</span></div>
       <div class="nav-item" onclick="showSection('shows')"><span>Discover Shows</span></div>
@@ -310,7 +308,7 @@
 
           <div class="quick-actions">
             <button class="action-btn" onclick="showSection('fan-review')">Submit Fan Review</button>
-            <button class="action-btn" onclick="showSection('heatmap')">View Your Heatmap</button>
+            <button class="action-btn secondary" onclick="showSection('heatmap')">View Your Heatmap</button>
           </div>
         </div>
       </div>
@@ -322,6 +320,7 @@
           <p style="color: #c9a780; margin-bottom: 2rem;">Your voice shapes the live music scene</p>
 
           <form id="form">
+            <!-- ALL FIELDS FROM YOUR ORIGINAL -->
             <div class="field">
               <label>Your Name *</label>
               <input type="text" name="fan_name" required>
@@ -435,11 +434,31 @@
         </div>
       </div>
 
-      <!-- OTHER SECTIONS (PLACEHOLDERS) -->
-      <div id="shows-section" class="hidden"><div class="section"><h2 class="section-title">Discover Shows</h2><p>Coming soon!</p></div></div>
-      <div id="artists-section" class="hidden"><div class="section"><h2 class="section-title">Vouch for Artists</h2><p>Coming soon!</p></div></div>
-      <div id="history-section" class="hidden"><div class="section"><h2 class="section-title">My History</h2><p>Your reviews will appear here.</p></div></div>
-      <div id="heatmap-section" class="hidden"><div class="section"><h2 class="section-title">Your Heatmap</h2><p><a href="ar_dashboard.html" target="_blank" style="color:#ff8c42">Open Heatmap →</a></p></div></div>
+      <!-- COMING SOON SECTIONS WITH EMOJIS -->
+      <div id="shows-section" class="hidden">
+        <div class="section">
+          <h2 class="section-title">Discover Shows</h2>
+          <p>Coming soon! We're building a curated list of shows near you.</p>
+        </div>
+      </div>
+      <div id="artists-section" class="hidden">
+        <div class="section">
+          <h2 class="section-title">Vouch for Artists</h2>
+          <p>Coming soon! Use your vouch tokens to support emerging artists.</p>
+        </div>
+      </div>
+      <div id="history-section" class="hidden">
+        <div class="section">
+          <h2 class="section-title">My History</h2>
+          <p>Your activity will appear here.</p>
+        </div>
+      </div>
+      <div id="heatmap-section" class="hidden">
+        <div class="section">
+          <h2 class="section-title">View Your Heatmap</h2>
+          <p><a href="ar_dashboard.html" target="_blank" style="color:#ff8c42; text-decoration:underline;">Open Mapbox Heatmap →</a></p>
+        </div>
+      </div>
     </div>
   </div>
 
@@ -455,7 +474,7 @@
       if (confirm('Logout?')) location.reload();
     }
 
-    // FORM LOGIC
+    // FORM LOGIC — SAME AS YOUR ORIGINAL
     document.addEventListener('DOMContentLoaded', async () => {
       const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
       const supabase = createClient('https://qwickgmrhqdnqaqxuuwk.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODA4OTEsImV4cCI6MjA3NTM1Njg5MX0.CxC1nH6Xvrggn_VNMmjuomeQQVdAfCwyPHJU81ZGjOM');
@@ -466,7 +485,6 @@
       const preview = document.getElementById('preview');
       const progress = document.getElementById('progress');
 
-      // Slider gradient
       document.querySelectorAll('.slider').forEach(slider => {
         const update = () => {
           const val = slider.value;
@@ -478,7 +496,6 @@
         update();
       });
 
-      // File preview
       document.getElementById('file').onchange = e => {
         const file = e.target.files[0];
         preview.innerHTML = '';
@@ -490,7 +507,6 @@
         }
       };
 
-      // Submit
       form.onsubmit = async e => {
         e.preventDefault();
         btn.disabled = true;
@@ -502,8 +518,11 @@
         const review_id = `rev_${Date.now()}_${Math.random().toString(36).substr(2,9)}`;
         const data = { review_id, created_time: new Date().toISOString(), has_media: false };
 
-        Object.keys(formData.entries()).forEach(([k, v]) => {
-          if (k !== 'media_upload') data[k] = ['rating','energy','stage_presence','crowd_reaction','originality','musicianship','review_weight','crowd_size_estimate'].includes(k) ? parseInt(v) || null : v;
+        Object.keys(Object.fromEntries(formData)).forEach(k => {
+          if (k !== 'media_upload') {
+            const val = formData.get(k);
+            data[k] = ['rating','energy','stage_presence','crowd_reaction','originality','musicianship','review_weight','crowd_size_estimate'].includes(k) ? parseInt(val) || null : val;
+          }
         });
 
         if (formData.get('media_upload').size > 0) {
