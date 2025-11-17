@@ -1,0 +1,402 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Fan Dashboard - Pulse A&R</title>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      color: #fff;
+      min-height: 100vh;
+    }
+
+    .header {
+      background: rgba(0, 0, 0, 0.3);
+      padding: 20px 40px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid rgba(255, 140, 66, 0.2);
+    }
+    .logo { font-size: 24px; font-weight: bold; color: #ff8c42; }
+    .user-info { display: flex; align-items: center; gap: 20px; }
+    .vouch-tokens {
+      background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%);
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-weight: bold;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .user-name { color: #c9a780; }
+    .logout-btn {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      color: white;
+      padding: 8px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+    }
+    .logout-btn:hover { background: rgba(255,255,255,0.2); }
+
+    .container { display: flex; max-width: 1400px; margin: 0 auto; padding: 40px; gap: 30px; }
+    .sidebar {
+      width: 250px;
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 20px;
+    }
+    .nav-item {
+      padding: 15px 20px;
+      margin-bottom: 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.3s;
+    }
+    .nav-item:hover { background: rgba(255,140,66,0.1); }
+    .nav-item.active { background: linear-gradient(90deg, #ff8c42 0%, #ff6b1a 100%); }
+
+    .main-content { flex: 1; }
+    .section {
+      background: rgba(0,0,0,0.3);
+      border-radius: 12px;
+      padding: 30px;
+      margin-bottom: 30px;
+    }
+    .section-title { font-size: 24px; color: #ff8c42; margin-bottom: 20px; }
+
+    .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px,1fr)); gap: 20px; margin-bottom: 30px; }
+    .stat-card { background: rgba(255,140,66,0.1); border: 1px solid rgba(255,140,66,0.3); border-radius: 12px; padding: 20px; text-align: center; }
+    .stat-value { font-size: 36px; font-weight: bold; color: #ff8c42; }
+    .stat-label { color: #c9a780; font-size: 14px; }
+
+    .welcome { font-size: 32px; margin-bottom: 10px; }
+    .welcome-subtitle { color: #c9a780; margin-bottom: 30px; }
+    .fan-status { padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: bold; background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%); }
+
+    .quick-actions { display: flex; gap: 15px; flex-wrap: wrap; margin-top: 20px; }
+    .action-btn {
+      background: linear-gradient(90deg, #ff8c42 0%, #ff6b1a 100%);
+      color: white;
+      border: none;
+      padding: 15px 30px;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: bold;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+    .action-btn:hover { transform: translateY(-2px); box-shadow: 0 5px 15px rgba(255,140,66,0.4); }
+
+    /* FORM STYLES */
+    .field { margin-bottom: 2rem; opacity: 0; animation: fadeInUp 0.6s ease forwards; }
+    .field:nth-child(1) { animation-delay: 0.05s; }
+    .field:nth-child(2) { animation-delay: 0.1s; }
+    .field:nth-child(3) { animation-delay: 0.15s; }
+    .field:nth-child(4) { animation-delay: 0.2s; }
+    .field:nth-child(5) { animation-delay: 0.25s; }
+    .field:nth-child(6) { animation-delay: 0.3s; }
+    .field:nth-child(7) { animation-delay: 0.35s; }
+    .field:nth-child(8) { animation-delay: 0.4s; }
+    .field:nth-child(9) { animation-delay: 0.45s; }
+    .field:nth-child(10) { animation-delay: 0.5s; }
+    .field:nth-child(11) { animation-delay: 0.55s; }
+    .field:nth-child(12) { animation-delay: 0.6s; }
+    @keyframes fadeInUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+    
+    label { 
+      display: block; 
+      font-weight: 600; 
+      margin-bottom: 0.75rem; 
+      font-size: 0.9rem; 
+      color: #ff8c42; 
+      text-transform: uppercase; 
+      letter-spacing: 0.5px;
+    }
+    
+    input, select, textarea { 
+      width: 100%; 
+      padding: 1.1rem 1.3rem; 
+      border: 2px solid #444; 
+      border-radius: 10px; 
+      background: #222; 
+      color: #fff; 
+      font-size: 1rem; 
+      transition: all 0.25s;
+    }
+    
+    input:focus, select:focus, textarea:focus { 
+      outline: none; 
+      border-color: #ff8c42; 
+      box-shadow: 0 0 0 4px rgba(255,140,66,0.2); 
+      background: #2a2a2a;
+    }
+    
+    .rating-grid { 
+      display: grid; 
+      grid-template-columns: repeat(2,1fr); 
+      gap: 1.5rem; 
+      margin-top: 1.5rem; 
+    }
+    
+    .rating-item { 
+      background: rgba(255,140,66,0.1); 
+      padding: 1.5rem; 
+      border-radius: 12px; 
+      border: 2px solid rgba(255,140,66,0.3); 
+      transition: all 0.3s;
+    }
+    
+    .rating-item:hover {
+      border-color: #ff8c42;
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(255,140,66,0.2);
+    }
+    
+    .slider { 
+      -webkit-appearance: none; 
+      height: 7px; 
+      border-radius: 10px; 
+      background: #333; 
+      flex: 1; 
+      outline: none;
+    }
+    
+    .slider::-webkit-slider-thumb { 
+      -webkit-appearance: none; 
+      width: 24px; 
+      height: 24px; 
+      border-radius: 50%; 
+      background: #ff8c42; 
+      cursor: grab; 
+      border: 3px solid white; 
+      box-shadow: 0 2px 12px rgba(255,140,66,0.4); 
+    }
+    
+    .rating-value { 
+      font-weight: 700; 
+      font-size: 1.8rem; 
+      color: #ff8c42; 
+      min-width: 42px; 
+      text-align: center; 
+      background: #222; 
+      border-radius: 10px; 
+      padding: 0.3rem 0.6rem; 
+    }
+    
+    .preview { 
+      margin-top: 1.2rem; 
+      border: 2px dashed #444; 
+      border-radius: 12px; 
+      padding: 1.5rem; 
+      min-height: 100px; 
+      background: #222; 
+      text-align: center; 
+    }
+    
+    button[type="submit"] { 
+      width: 100%; 
+      padding: 1.4rem; 
+      background: linear-gradient(135deg, #ff8c42 0%, #ff6b1a 100%); 
+      color: white; 
+      border: none; 
+      border-radius: 12px; 
+      font-size: 1.15rem; 
+      font-weight: 700; 
+      cursor: pointer; 
+      margin-top: 1.5rem; 
+      box-shadow: 0 6px 20px rgba(255,140,66,0.35);
+    }
+    
+    .msg { 
+      margin: 2rem 0; 
+      padding: 1.5rem; 
+      border-radius: 12px; 
+      text-align: center; 
+      font-weight: 600; 
+      display: none; 
+    }
+    
+    .msg.show { display: block; }
+    
+    .success { 
+      background: rgba(34,197,94,0.2); 
+      color: #86efac; 
+      border: 2px solid #86efac; 
+    }
+    
+    .progress { 
+      height: 5px; 
+      background: #333; 
+      overflow: hidden; 
+      border-radius: 12px;
+      margin-top: 1rem;
+    }
+    
+    .progress-bar { 
+      height: 100%; 
+      background: linear-gradient(90deg, #ff8c42, #ff6b1a); 
+      width: 0%; 
+      transition: width 0.5s; 
+    }
+
+    @media (max-width: 768px) {
+      .container { flex-direction: column; padding: 20px; }
+      .sidebar { width: 100%; }
+      .rating-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="header">
+    <div class="logo">Pulse A&R</div>
+    <div class="user-info">
+      <div class="vouch-tokens">
+        <span>25</span>
+        <span>Vouch Tokens</span>
+      </div>
+      <div class="user-name">Demo Fan</div>
+      <button class="logout-btn" onclick="logout()">Logout</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="sidebar">
+      <div class="nav-item active" onclick="showSection('dashboard')">Dashboard</div>
+      <div class="nav-item" onclick="showSection('fan-review')">Fan Review Form</div>
+    </div>
+
+    <div class="main-content">
+      <!-- DASHBOARD -->
+      <div id="dashboard-section">
+        <div class="section">
+          <h1 class="welcome">Welcome back, Demo Fan!</h1>
+          <p class="welcome-subtitle">
+            New York • 
+            <span class="fan-status">Scene Explorer</span>
+          </p>
+
+          <div class="stats-grid">
+            <div class="stat-card"><div class="stat-value">25</div><div class="stat-label">Vouch Tokens</div></div>
+            <div class="stat-card"><div class="stat-value">12</div><div class="stat-label">Shows Attended</div></div>
+            <div class="stat-card"><div class="stat-value">8</div><div class="stat-label">Artists Vouched</div></div>
+            <div class="stat-card"><div class="stat-value">150</div><div class="stat-label">Total Impact</div></div>
+          </div>
+
+          <div class="quick-actions">
+            <button class="action-btn" onclick="showSection('fan-review')">Submit Fan Review</button>
+          </div>
+        </div>
+      </div>
+
+      <!-- FAN REVIEW FORM -->
+      <div id="fan-review-section" class="hidden">
+        <div class="section">
+          <h2 class="section-title">Fan Review Form</h2>
+          <form id="form">
+            <!-- ALL FIELDS FROM YOUR FORM -->
+            <div class="field">
+              <label>Your Name *</label>
+              <input type="text" name="fan_name" required>
+            </div>
+            <div class="field">
+              <label>Show Attended *</label>
+              <input type="text" name="show_attended" required>
+            </div>
+            <!-- ... all other fields ... -->
+            <div class="field">
+              <label>Upload Photo/Video</label>
+              <input type="file" id="file" accept="image/*,video/*">
+              <div class="preview" id="preview"></div>
+            </div>
+            <button type="submit" id="btn">Submit Review</button>
+          </form>
+          <div class="progress"><div class="progress-bar" id="progress"></div></div>
+          <div id="msg" class="msg"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    window.showSection = function(section) {
+      document.querySelectorAll('[id$="-section"]').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+      document.getElementById(`${section}-section`).classList.remove('hidden');
+      document.querySelector(`[onclick="showSection('${section}')"]`).closest('.nav-item').classList.add('active');
+    };
+
+    // FORM LOGIC (SAME AS BEFORE)
+    document.addEventListener('DOMContentLoaded', () => {
+      const supabase = (await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm')).createClient(
+        'https://qwickgmrhqdnqaqxuuwk.supabase.co',
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODA4OTEsImV4cCI6MjA3NTM1Njg5MX0.CxC1nH6Xvrggn_VNMmjuomeQQVdAfCwyPHJU81ZGjOM'
+      );
+
+      const form = document.getElementById('form');
+      const btn = document.getElementById('btn');
+      const msg = document.getElementById('msg');
+      const preview = document.getElementById('preview');
+      const progress = document.getElementById('progress');
+
+      document.getElementById('file').onchange = e => {
+        const file = e.target.files[0];
+        preview.innerHTML = '';
+        if (file) {
+          const url = URL.createObjectURL(file);
+          preview.innerHTML = file.type.startsWith('image/') 
+            ? `<img src="${url}">` 
+            : `<video src="${url}" controls></video>`;
+        }
+      };
+
+      form.onsubmit = async e => {
+        e.preventDefault();
+        btn.disabled = true;
+        btn.textContent = 'Submitting...';
+        msg.classList.remove('show');
+        progress.style.width = '0%';
+
+        const formData = new FormData(form);
+        const review_id = `rev_${Date.now()}`;
+        const data = { review_id, ...Object.fromEntries(formData), created_time: new Date().toISOString() };
+
+        if (formData.get('media_upload').size > 0) {
+          const file = formData.get('media_upload');
+          const ext = file.name.split('.').pop();
+          const { error } = await supabase.storage.from('review-media').upload(`reviews/${review_id}.${ext}`, file);
+          if (!error) {
+            const { data: url } = supabase.storage.from('review-media').getPublicUrl(`reviews/${review_id}.${ext}`);
+            data.media_upload = url.publicUrl;
+          }
+          progress.style.width = '70%';
+        }
+
+        const { error } = await supabase.from('fan_reviews').insert([data]);
+        progress.style.width = '100%';
+
+        if (error) {
+          msg.textContent = 'Error: ' + error.message;
+          msg.className = 'msg error show';
+        } else {
+          msg.innerHTML = 'Review saved! Thank you!<br><a href="#" target="_blank" style="color:#1da1f2">Share on X</a>';
+          msg.className = 'msg success show';
+          confetti({ particleCount: 150, spread: 90, colors: ['#ff8c42', '#ff6b1a'] });
+          form.reset();
+          setTimeout(() => showSection('dashboard'), 3000);
+        }
+        btn.disabled = false;
+        setTimeout(() => progress.style.width = '0%', 1000);
+      };
+    });
+  </script>
+</body>
+</html>
