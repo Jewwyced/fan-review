@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <title>Pulse A&R Dashboard</title>
+  <meta name="viewport" content="initial-scale=1,maximum-scale=1,user-scalable=no">
+  <script src="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.js"></script>
+  <link href="https://api.mapbox.com/mapbox-gl-js/v3.0.1/mapbox-gl.css" rel="stylesheet">
+  <style>
+    body{margin:0;padding:0;font-family:'Inter',sans-serif;}
+    #dashboard{display:flex;flex-direction:column;height:100vh;}
+    #briefing{height:150px;overflow:hidden;display:flex;flex-direction:column;justify-content:center;margin-bottom:0;}
+    .header,.filters,.header p,.header h1,.header h2{margin:0;padding:0;}
+    .header{background:linear-gradient(135deg,#4e2c20,#2d1a13);padding:20px 30px;color:white;line-height:1.2;}
+    .header h1{font-size:32px;font-weight:700;color:#FF6B00;}
+    .header .alert{font-size:20px;font-weight:500;color:#F5E1C0;}
+    .header p{margin:4px 0;}
+    .header .subtext{font-size:16px;color:#D3C0A5;}
+    .header .stat-badge{display:inline-block;background:#FF6B00;color:white;padding:2px 8px;border-radius:8px;font-weight:600;font-size:0.9em;vertical-align:middle;}
+    .header .divider{font-size:14px;text-transform:uppercase;letter-spacing:2px;color:#D3C0A5;}
+    #map-section{flex:1;position:relative;height:80%;border-top:2px solid #FF6B00;border-bottom:2px solid #FF6B00;border-radius:8px;overflow:hidden;margin-bottom:20px;}
+    #map{position:absolute;top:0;bottom:0;width:100%;}
+    .filters{margin-top:0;padding:10px 30px;background-color:#4e2c20;border-top:2px solid #FF6B00;}
+    select{padding:8px;background:#4e2c20;color:#FF8C00;border:1px solid #FF6B00;border-radius:6px;box-shadow:0 0 0 0 transparent;transition:box-shadow 0.3s ease;font-family:'Inter',sans-serif;}
+    select:hover{box-shadow:0 0 5px rgba(255,107,0,0.4);}
+    .mapboxgl-popup-content{max-width:450px;max-height:600px;overflow-y:auto;padding:20px;}
+    .venue-header{font-size:20px;font-weight:700;color:#FF6B00;margin-bottom:8px;}
+    .venue-info{font-size:13px;color:#666;margin-bottom:15px;padding-bottom:10px;border-bottom:2px solid #eee;}
+    .review-item{border-bottom:1px solid #eee;padding:15px 0;}
+    .review-item:last-child{border-bottom:none;}
+    .review-rating{font-weight:600;color:#FF6B00;font-size:15px;margin-bottom:4px;}
+    .review-date{font-size:11px;color:#999;margin-bottom:8px;}
+    .review-moment{font-size:14px;margin:8px 0;color:#333;line-height:1.4;}
+    .media-thumbnail{width:100%;height:200px;object-fit:cover;border-radius:8px;margin:10px 0;cursor:pointer;transition:transform 0.2s;box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+    .media-thumbnail:hover{transform:scale(1.02);}
+    .no-reviews{color:#999;font-style:italic;padding:20px 0;text-align:center;}
+  </style>
+</head>
+<body>
+  <div id="dashboard">
+    <div id="briefing">
+      <div class="header">
+        <h1>Morning Briefing</h1>
+        <h2 class="alert">Heat Alert: 1 venues with rising buzz</h2>
+        <p class="subtext">Max Buzz: <span class="stat-badge">13.94</span> (Top: Trans Pecos at 13.94)</p>
+        <h2 class="divider">Early Warning System</h2>
+        <p class="subtext">16 vouches in the last 24 hours across 4 cities</p>
+      </div>
+    </div>
+    <div class="filters">
+      <label>Filter by City:</label>
+      <select id="city-filter">
+        <option value="">All Cities</option>
+        <option value="Austin, TX">Austin, TX</option>
+        <option value="Los Angeles, CA">Los Angeles, CA</option>
+        <option value="New York, NY">New York, NY</option>
+        <option value="Nashville, TN">Nashville, TN</option>
+      </select>
+      <label>Filter by Buzz Level:</label>
+      <select id="buzz-filter">
+        <option value="">All Levels</option>
+        <option value="high">High Buzz (>20)</option>
+        <option value="medium">Medium Buzz (10-20)</option>
+        <option value="low">Low Buzz (<10)</option>
+      </select>
+    </div>
+    <div id="map-section">
+      <div id="map"></div>
+    </div>
+  </div>
+  <script>
+    const cityCoords={"New York, NY": [-74.0059, 40.7128], "Los Angeles, CA": [-118.2437, 34.0522], "Austin, TX": [-97.7431, 30.2672], "Nashville, TN": [-86.7816, 36.1627]};
+    const geojsonData={"type": "FeatureCollection", "features": [{"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.90615804613037, 40.69743607907195]}, "properties": {"Venue Name": "Trans Pecos", "City": "New York, NY", "Neighborhood": "Ridgewood", "Address": "9-15 Wyckoff Ave, Ridgewood, NY ", "Postal Code": "11385", "Capacity": "250", "Total Reviews": "1", "Review Weight": 13.94, "reviews": [{"rating": 8, "standout_moment": "When they played tears, i've been listening to that song for years", "date": "2025-09-19T00:00:00", "artist_reviewed": ["recH0R8xUCJ5fO00B", "rec102FY81Q2Keq07"], "media_url": null}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.992345, 40.69461758388198]}, "properties": {"Venue Name": "St Ann Church", "City": "New York, NY", "Neighborhood": "Brooklyn Heights", "Address": "157 Montague St", "Postal Code": "11201", "Capacity": "800", "Total Reviews": "1", "Review Weight": 3.01, "reviews": [{"rating": 8, "standout_moment": "For me it was definitely when he played \"Across the Jaw\", my favorite song of his.", "date": "2025-08-16T00:00:00", "artist_reviewed": ["rec9be82x3ammXacz"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/kgZgI9C5ZKixyP2shsEn7g/VXKfpKthIUDuL9p1Kw8H5_7kD8eEp2hosAiv7YZzqEaug31UM4gwMU8pGS_bEpq_171n4E5BrbRS-kJdtkLF4sZvKHrJkAY-R5exVcXziX9JIu5DQrdYM9WZr_gwr68LaRMgjhd8TV07dM01ov5FVT-xgIaLjftdGWk3mso_9e8/jfHCQX0fGZ7TxwcVsh8CFYWZTwmJbWDnMlUj0QvTxww"}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-86.790446, 36.15344388907492]}, "properties": {"Venue Name": "Live Oak", "City": "Nashville, TN", "Neighborhood": "Music Row", "Address": "1522 Demonbreun St", "Postal Code": "37203", "Capacity": "120", "Total Reviews": "1", "Review Weight": 2.7, "reviews": [{"rating": 7, "standout_moment": "I think his second song was my favorite. It was so melodically rich and set the tone for the night.", "date": "2025-08-16T00:00:00", "artist_reviewed": ["recvclNs22pw1NHCJ"], "media_url": null}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.983683, 40.725731]}, "properties": {"Venue Name": "Night Club 101", "City": "New York, NY", "Neighborhood": "East Village", "Address": "101 Avenue A", "Postal Code": "10009", "Capacity": "150", "Total Reviews": "1", "Review Weight": 3.86, "reviews": [{"rating": 9, "standout_moment": "Their transition into the song \"Sugarcoated\"", "date": "2025-08-11T00:00:00", "artist_reviewed": ["rece97cXdAHVnVaK6"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/bb1b0tapQx0DoW1LTwANPw/-rjKqcBALszYLIbnAgog2N-7oWvD0qm5aE_JOyoHHQbWj5ssSY-B2Cq22vKAvd25E2HvqBE8y3H_Z1p5JD4ZaRxKJHkXMdibopVM5oDXWBP0JPvs3HHbJYOSPt-DsxU0WQh5szXbJUCIv2JYXno1loacOsExm23-oinaCvqwSCT1D5lbBJ5JISWJN2fZ_0My/2A5ck5ISKklCd03Qp3Mq0DForRgsNrX3_oEV3nlvloM"}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-118.36135979, 34.07964439]}, "properties": {"Venue Name": "Genghis Cohen", "City": "Los Angeles, CA", "Neighborhood": "Hollywood ", "Address": "740 N Fairfax Ave", "Postal Code": "90046", "Capacity": "80", "Total Reviews": "1", "Review Weight": 7.32, "reviews": [{"rating": 8, "standout_moment": "Hearing all of his unreleased stuff was super cool", "date": "2024-06-22T00:00:00", "artist_reviewed": ["rec25rlYoX1kE80Zh"], "media_url": null}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.9921, 40.7285]}, "properties": {"Venue Name": "Jeans", "City": "New York, NY", "Neighborhood": "Noho", "Address": "415 Lafayette St", "Postal Code": "10003", "Capacity": "300", "Total Reviews": "1", "Review Weight": 4.49, "reviews": [{"rating": 7, "standout_moment": "Every time the music stopped and the frontman's voice really stood out.", "date": "2025-05-30T00:00:00", "artist_reviewed": ["recAcpU8Pbq5x3yCx"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/Dw0oWsAFcZtBGx2w2c_zlg/VFmBaUoEzRjYYSuaPyrGM98_8vKvYqnpRWPW5QpB3TP21FS93aazuKd4R8ZvwktLBFC5ZztJMnfk6tfJRtStLQHQpSCjg5PSkianaUG5zvORqapzZo4HEamW2JknBF_5q9kHhPd8McoRwnONk_iz8id9kAivOCX5DSA3WQM984E/DD0urF-VlLGKOKdLS02hUlWAD8c2EBDIYTj5hR6qbRg"}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.923301, 40.70966915691328]}, "properties": {"Venue Name": "Elsewhere Rooftop", "City": "New York, NY", "Neighborhood": "East Williamsburg", "Address": "599 Johnson Ave #1", "Postal Code": "11237", "Capacity": "200", "Total Reviews": "1", "Review Weight": 2.45, "reviews": [{"rating": 6, "standout_moment": "When they played their song \"Day One Homies\" all of their homies got on stage.", "date": "2024-09-18T00:00:00", "artist_reviewed": ["recgDPHeGluKhU20U"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/x46UsDHgWOqsRJlH8-6ibw/ppfMe3c-sv7WTZx1qDaUgj3fI9NdSmhJfAjJ2i_JhUy_1TY7SFwfim3ilX3opdoboYLjMQC3X1lIJJ3Lxz1VMcuEMQFnJ0CFB1697dE3EiYwhnX8T163mSx2hrWRpE_SI-rwNkeYNk0MWT5SY2aMFWxUFctHPqbpacGdHawFgBo/PyamcA5n6MCT6Une5V2jg56udgTmv6e8nCP7UV1ONCg"}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.951176, 40.721913]}, "properties": {"Venue Name": "Warsaw", "City": "New York, NY", "Neighborhood": "Greenpoint", "Address": "261 Driggs Ave", "Postal Code": "11222", "Capacity": "1100", "Total Reviews": "1", "Review Weight": 3.45, "reviews": [{"rating": 8, "standout_moment": "Their song Los Angeles Filter has this part where it's just bass and drums. It was really tight, really powerful and a great display of the rhythm section's musicianship.", "date": "2024-10-03T00:00:00", "artist_reviewed": ["recrTL6hiGxc6xtK6"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/ESV-2mrrkxUNDHBhKtgDyg/HZQhDQQKPnkIQsT2OfyHQpe7IURThd23T94G4DXh4HP7X50M0LVMXzugDdHRvwWHeInBwZQEpuZ-RQgTcTFXBavW4omhB4xfR-UZGRoHL9Sq8eLi7pHwcJbj-y_ccFD3gbj8V6TbIfUYZv7aj97Y6C3IFQ3yG_of9-qAI2cF5m-5QBjVRODUWf5RkXmopicUuRP6A_E7q3yJurwBb-Kd_A/THSW0L28xYyj3kEu1QNPaOaAvbBWkuMBqUd7kYeUVmY"}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.914348, 40.71590648]}, "properties": {"Venue Name": "Knockdown Center", "City": "New York, NY", "Neighborhood": "East Williamsburg", "Address": "52-19 Flushing Ave", "Postal Code": "11378", "Capacity": "3100", "Total Reviews": "1", "Review Weight": 8.37, "reviews": [{"rating": 9, "standout_moment": "Whenever they pleayed any songs of their record IV.", "date": "2025-05-01T00:00:00", "artist_reviewed": ["recTQmpTUM9foqAJY"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/XYt_rEHFoNRwXBCQ70ii2A/bzbBCD1w7tCSBJDbnFnoBcK4vca-MWZvoB16JXuj_vx3TA6c5jfS8n2vBNbjC6NM2ena58Aj0vaNNKTjucKyO8JX-dAaCNeXVH2VcwU58lnXG20BBMMAq8nWOzo4jelhYySdvwm1W2zferw0vpF2TBxQy9iuf0hNE__M5eOPIk7fGfEzpTNuzguP-PMf3Uh9owTxQ97I3et1HKgHc7dkNQ/hMp0EubudCMKlCeyoqk033m-Py6HzkoulhB6fznKULM"}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.9891, 40.7318]}, "properties": {"Venue Name": "Webster Hall", "City": "New York, NY", "Neighborhood": "East Village", "Address": "125 E 11th St", "Postal Code": "10003", "Capacity": "1500", "Total Reviews": "1", "Review Weight": 4.32, "reviews": [{"rating": 10, "standout_moment": "When they played their song \"Any Time of Day\" the crowd went crazy, the band went crazy and I went crazy.", "date": "2024-10-12T00:00:00", "artist_reviewed": ["recYzBV9LV3udZoD8"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/3MEC3OR4dnqF7_fIOQQFLw/ppFXlAsbW4HJGfIMW223q7bOSSxYg8f5R6seXBwkDi83ajtpSpqQsWhChBEzAoGFWtkuhkAcOhRKH2BRiKGyFIKeKWDbpK5fTVPhkMlEI2VQoQNEreH8Vy2p4pqofW62R6PM48OI1aWJ2FG39UEnsD3fvtlFzXWQxk7Z0KVz64KigaBJYrqNSCv1fKelUvSTLD_9vTtfPaI_nDNP8HLNpw/eHjp8d9H8lQ1QposUGwgXIaTizpuYVNMb1UaULC6qrw"}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.98849092, 40.73525416]}, "properties": {"Venue Name": "Irving Plaza", "City": "New York, NY", "Neighborhood": "Gramercy", "Address": "17 Irving Pl", "Postal Code": "10003", "Capacity": "1200", "Total Reviews": "1", "Review Weight": 6.71, "reviews": [{"rating": 9, "standout_moment": "When they played the song \"8\"", "date": "2024-05-16T00:00:00", "artist_reviewed": ["rec102FY81Q2Keq07"], "media_url": null}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-118.124456, 34.151029608138174]}, "properties": {"Venue Name": "Healing Force of The Universe", "City": "Los Angeles, CA", "Neighborhood": "Pasadena", "Address": "1200 E Walnut St", "Postal Code": "91106", "Capacity": "150", "Total Reviews": "1", "Review Weight": 5.72, "reviews": [{"rating": 9, "standout_moment": "The harmonies, the eye contact, the chemistry of the band. It all bled through and made the audience feel as if we were in the band's rehearsal in their backyard.", "date": "2025-03-09T00:00:00", "artist_reviewed": ["recBwrLj3XiQb0Pra"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/5poraWh4I6fN6DM0rTB_8A/OVdJ6cW375Fc9EqL_vGQMfN0xrw3gfVCl5Hd8rpljkioB1JwiHCsZ8k2F-spqPkvR5lUs2i-0g3kRXDvO5H82YXwXGKnrENmaHj8NIZyWPK7lD9ZandntOsFng4gTA5Sz5UwOAUbJls7fUtMbUAp539oc_BfKfmFsNGcf73dJi3S7yI1Vo74fEUstFCLg1t_GwcnA8MbDEAk2oStwFjesw/5ywnXhb6v0oBcpM5KxSGnsK02Mg-TTgmaGuRbR5b5W0"}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-97.736258, 30.270238295777922]}, "properties": {"Venue Name": "The Mohawk", "City": "Austin, TX", "Neighborhood": "Red River Cultural District", "Address": " 912 Red River St", "Postal Code": "78701", "Capacity": "900", "Total Reviews": "1", "Review Weight": 4.1, "reviews": [{"rating": 10, "standout_moment": "Everytime they get to the end of their set they play \"Flesh and Solitude\". At the end of the song the drummer goes actually crazy and plays the wildest fills.", "date": "2025-04-29T00:00:00", "artist_reviewed": ["recrtXvLbnwOXUXyx"], "media_url": null}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.99988, 40.72843]}, "properties": {"Venue Name": "Le Poisson Rouge", "City": "New York, NY", "Neighborhood": "Greenwich Village", "Address": "158 Bleecker St", "Postal Code": "10012", "Capacity": "700", "Total Reviews": "1", "Review Weight": 4.8, "reviews": [{"rating": 6, "standout_moment": "Their last song, where's my dini, always a classic", "date": "2025-02-13T00:00:00", "artist_reviewed": ["recfIa5UjEICLa02K"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/-c16wJplzmoKkGjAtRX3Sw/WAeDjGfdp7v-4ziumpD8a0sIEtjqzD4-LDPp9WN5JcVKiZphOzeSfphF99SUA_OAEA6FPFwTjg2LqoH-WDSRXGSIG0aoRQfH2SfDu3V61JGRTtQHS-VHJgMmTTKnccSjStC36Sx0wW9cwDiIRG0ibeJXgeMzgL3UyAp9vmESY3Y/sRs4g_39PqZhrFLg4DmCJpsXP08Kt4RZUDtL1o6peH0"}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-73.95019300365614, 40.718326658278926]}, "properties": {"Venue Name": "Pete's Candy Store", "City": "New York, NY", "Neighborhood": "Williamsburg", "Address": "709 Lorimer St", "Postal Code": "11211", "Capacity": "60", "Total Reviews": "1", "Review Weight": 7.2, "reviews": [{"rating": 7, "standout_moment": "At the end of the set he did a cool solo performance of two songs", "date": "2025-06-30T00:00:00", "artist_reviewed": ["recJDQ9VuykvEaDHW"], "media_url": null}]}}, {"type": "Feature", "geometry": {"type": "Point", "coordinates": [-118.3267, 34.101642]}, "properties": {"Venue Name": "Fonda Theatre", "City": "Los Angeles, CA", "Neighborhood": "Hollywood", "Address": "6126 Hollywood Blvd", "Postal Code": "90028", "Capacity": "1200", "Total Reviews": "1", "Review Weight": 6.15, "reviews": [{"rating": 9, "standout_moment": "Their intro, 953. One word insane.", "date": "2021-10-07T00:00:00", "artist_reviewed": ["rechocdGbt4KJFGTc"], "media_url": "https://v5.airtableusercontent.com/v3/u/45/45/1759723200000/MLCwlSwjsAamIZ49kL2W7Q/0oIUtn31EDbi9i90P9aH1ZFmz8RBWQX-WjyVLrR8JCQV8wtDDsHlKbsPFSyiyewbLaT5W0xNYZWxTv3No5oVrGME9oiPNmWbnOkXtUZbseQy2mnurMVt4lCYg9mVNre86IBK0p1eQk8stItt8MhjUILb2_m-Iu-JTfDxlvBiPvM/MYs8zODz-oQrspbOPE5khr-vrNicU3ua_w2LwjBVwIo"}]}}]};
+    mapboxgl.accessToken="pk.eyJ1IjoidGFsY2VkYXIiLCJhIjoiY21mdWRib3hmMTZ1aTJrcHJyZG5yaWVzYSJ9.hotRuyxF20eDgwX-iVXHmA";
+    const map=new mapboxgl.Map({container:"map",style:"mapbox://styles/mapbox/streets-v12",center:[-100,40],zoom:3});
+
+    map.on("load",()=>{
+      map.addSource("venues",{type:"geojson",data:geojsonData});
+
+      map.addLayer({
+        id:"venues-heat",
+        type:"heatmap",
+        source:"venues",
+        maxzoom:15,
+        paint:{
+          "heatmap-weight":["interpolate",["linear"],["get","Review Weight"],0,0,13.94,1],
+          "heatmap-intensity":["interpolate",["linear"],["zoom"],0,1,15,3],
+          "heatmap-color":["interpolate",["linear"],["heatmap-density"],0,"rgba(33,102,172,0)",0.2,"rgb(103,169,207)",0.4,"rgb(209,229,240)",0.6,"rgb(253,219,199)",0.8,"rgb(239,138,98)",1,"rgb(178,24,43)"],
+          "heatmap-radius":["interpolate",["linear"],["zoom"],0,2,15,20],
+          "heatmap-opacity":0.8
+        }
+      });
+
+      map.addLayer({
+        id:"venues-point",
+        type:"circle",
+        source:"venues",
+        minzoom:0,
+        paint:{
+          "circle-radius":["interpolate",["linear"],["zoom"],3,["interpolate",["linear"],["get","Review Weight"],0,5,13.94,15],15,["interpolate",["linear"],["get","Review Weight"],0,6,13.94,20]],
+          "circle-color":"#FF7300",
+          "circle-stroke-width":1,
+          "circle-stroke-color":"#fff",
+          "circle-opacity":1,
+          "circle-blur":0.2
+        }
+      });
+
+      map.on("click","venues-point",(e)=>{
+        const feature=e.features[0];
+        const props=feature.properties;
+        
+        const fullFeature=geojsonData.features.find(f=>f.properties["Venue Name"]===props["Venue Name"]);
+        const reviews=fullFeature?fullFeature.properties.reviews:[];
+        
+        console.log('Venue:',props["Venue Name"],'Reviews:',reviews);
+        
+        let reviewsHtml='<div class="no-reviews">No reviews yet</div>';
+        if(reviews && reviews.length>0){
+          reviewsHtml=reviews.map(r=>{
+            const dateStr=new Date(r.date).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
+            const mediaHtml=r.media_url?`<img src="${r.media_url}" class="media-thumbnail" onclick="window.open('${r.media_url}','_blank')" alt="Show photo">`:'' ;
+            return `<div class="review-item">
+              <div class="review-rating">★ ${r.rating}/10</div>
+              <div class="review-date">${dateStr}</div>
+              <div class="review-moment">"${r.standout_moment}"</div>
+              ${mediaHtml}
+            </div>`;
+          }).join('');
+        }
+        
+        const popupHtml=`
+          <div class="venue-header">${props["Venue Name"]}</div>
+          <div class="venue-info">
+            ${props.City} • ${props.Neighborhood}<br>
+            Buzz Score: <strong>${props["Review Weight"]}</strong> • ${props["Total Reviews"]} review(s)
+          </div>
+          ${reviewsHtml}
+        `;
+        
+        new mapboxgl.Popup({maxWidth:'450px'})
+          .setLngLat(feature.geometry.coordinates)
+          .setHTML(popupHtml)
+          .addTo(map);
+      });
+
+      document.getElementById("city-filter").addEventListener("change",(e)=>{
+        const selectedCity=e.target.value;
+        const filter=selectedCity?["==","City",selectedCity]:["!=","City",""];
+        map.setFilter("venues-heat",filter);
+        map.setFilter("venues-point",filter);
+        if(selectedCity&&cityCoords[selectedCity]){
+          map.flyTo({center:cityCoords[selectedCity],zoom:10});
+        }else if(!selectedCity){
+          map.flyTo({center:[-100,40],zoom:3});
+        }
+      });
+
+      document.getElementById("buzz-filter").addEventListener("change",(e)=>{
+        let filter=["all"];
+        switch(e.target.value){
+          case"high":
+            filter.push([">","Review Weight",20]);
+            break;
+          case"medium":
+            filter.push([">=","Review Weight",10],["<=","Review Weight",20]);
+            break;
+          case"low":
+            filter.push(["<","Review Weight",10]);
+            break;
+        }
+        map.setFilter("venues-heat",filter);
+        map.setFilter("venues-point",filter);
+      });
+    });
+  </script>
+</body>
+</html>
