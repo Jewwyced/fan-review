@@ -320,7 +320,6 @@
           <p style="color: #c9a780; margin-bottom: 2rem;">Your voice shapes the live music scene</p>
 
           <form id="form">
-            <!-- ALL FIELDS FROM YOUR ORIGINAL -->
             <div class="field">
               <label>Your Name *</label>
               <input type="text" name="fan_name" required>
@@ -474,7 +473,7 @@
       if (confirm('Logout?')) location.reload();
     }
 
-    // FORM LOGIC — SAME AS YOUR ORIGINAL
+    // FORM LOGIC
     document.addEventListener('DOMContentLoaded', async () => {
       const { createClient } = await import('https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm');
       const supabase = createClient('https://qwickgmrhqdnqaqxuuwk.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF3aWNrZ21yaHFkbnFhcXh1dXdrIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk3ODA4OTEsImV4cCI6MjA3NTM1Njg5MX0.CxC1nH6Xvrggn_VNMmjuomeQQVdAfCwyPHJU81ZGjOM');
